@@ -1,9 +1,6 @@
-﻿using Board.Entities;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Board.Entities;
 
 namespace Board.Engine
 {
@@ -13,14 +10,18 @@ namespace Board.Engine
 		{
 			switch (direction)
 			{
-				case MoveDirection.SE:
+				case MoveDirection.SouthEast:
 					return Translate(unit, (unit.Pivot.Y % 2) == 0 ? 0 : 1, 1);
-				case MoveDirection.SW:
+				case MoveDirection.SouthWest:
 					return Translate(unit, (unit.Pivot.Y % 2) == 0 ? -1 : 0, 1);
-				case MoveDirection.E:
+				case MoveDirection.East:
 					return Translate(unit, 1, 0);
-				case MoveDirection.W:
+				case MoveDirection.West:
 					return Translate(unit, -1, 0);
+				case MoveDirection.RotateClockwise:
+					return Rotate(unit, 60);
+				case MoveDirection.RotateCounterClockwise:
+					return Rotate(unit, -60);
 				default:
 					return unit;
 			}

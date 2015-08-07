@@ -2,20 +2,11 @@
 using Board.Entities;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Board.Entities;
+using Newtonsoft.Json;
 
 namespace Board
 {
@@ -39,7 +30,6 @@ namespace Board
 
 			commandBar.SpawnEvent += commandBarSpawnEvent;
 			commandBar.Move += commandBarMove;
-			commandBar.Rotate += commandBarRotate;
 		}
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)
@@ -51,12 +41,6 @@ namespace Board
 		private void commandBarMove(object sender, MoveDirection e)
 		{
 			_currentUnit = Moving.Translate(_currentUnit, e);
-			background.DrawUnit(_input, _currentUnit);
-		}
-
-		private void commandBarRotate(object sender, double e)
-		{
-			_currentUnit = Moving.Rotate(_currentUnit, e);
 			background.DrawUnit(_input, _currentUnit);
 		}
 
