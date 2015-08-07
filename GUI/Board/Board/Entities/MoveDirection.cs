@@ -8,9 +8,11 @@ namespace Board.Entities
 {
 	public enum MoveDirection
 	{
-		E,
-		W,
-		SE,
-		SW
+		East,
+		West,
+		SouthEast,
+		SouthWest,
+		RotateClockwise,
+		RotateCounterClockwise,
 	}
 }

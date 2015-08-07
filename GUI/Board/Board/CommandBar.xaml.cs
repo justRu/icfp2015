@@ -1,18 +1,7 @@
-﻿using Board.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Board.Entities;
 
 namespace Board
 {
@@ -23,7 +12,6 @@ namespace Board
 	{
 		public event EventHandler SpawnEvent;
 		public event EventHandler<MoveDirection> Move;
-		public event EventHandler<double> Rotate;
 
 		public CommandBar()
 		{
@@ -33,32 +21,21 @@ namespace Board
 
 		internal void InvokeCommand(string cmd)
 		{
-			switch (cmd)
+			if (cmd == "spawn")
 			{
-				case "spawn":
-					SpawnEvent(this, null);
-					break;
-				case "moveE":
-					Move(this, MoveDirection.E);
-					break;
-				case "moveW":
-					Move(this, MoveDirection.W);
-					break;
-				case "moveSE":
-					Move(this, MoveDirection.SE);
-					break;
-				case "moveSW":
-					Move(this, MoveDirection.SW);
-					break;
-				case "rotateClock":
-					Rotate(this, 60);
-					break;
-				case "rotateCounterClock":
-					Rotate(this, -60);
-					break;
+				SpawnEvent(this, null);
+				return;
 			}
+
+			MoveDirection move;
+			if (!Enum.TryParse(cmd, true, out move))
+			{
+				throw new InvalidOperationException("Bad command: " + cmd);
+			}
+			Move(this, move);
 		}
 	}
+
 
 	public class Controller
 	{

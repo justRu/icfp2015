@@ -1,20 +1,9 @@
-﻿using Board.Entities;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Board.Entities;
+using Newtonsoft.Json;
 
 namespace Board
 {
@@ -38,7 +27,6 @@ namespace Board
 
 			commandBar.SpawnEvent += commandBarSpawnEvent;
 			commandBar.Move += commandBarMove;
-			commandBar.Rotate += commandBarRotate;
 		}
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)
@@ -53,24 +41,22 @@ namespace Board
 			background.DrawUnit(_input, _currentUnit);
 		}
 
-		private void commandBarRotate(object sender, double e)
-		{
-			_currentUnit = Rotate(_currentUnit, e);
-			background.DrawUnit(_input, _currentUnit);
-		}
-
 		private Unit Translate(Unit unit, MoveDirection direction)
 		{
 			switch (direction)
 			{
-				case MoveDirection.SE:
+				case MoveDirection.SouthEast:
 					return Translate(unit, 1, 1);
-				case MoveDirection.SW:
+				case MoveDirection.SouthWest:
 					return Translate(unit, -1, 1);
-				case MoveDirection.E:
+				case MoveDirection.East:
 					return Translate(unit, 1, 0);
-				case MoveDirection.W:
+				case MoveDirection.West:
 					return Translate(unit, -1, 0);
+				case MoveDirection.RotateClockwise:
+					return Rotate(unit, 60);
+				case MoveDirection.RotateCounterClockwise:
+					return Rotate(unit, -60);
 				default:
 					return unit;
 			}
