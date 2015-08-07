@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="Board.CommandBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel Orientation="Horizontal">
+		<Button Command="{Binding ClickCommand}" CommandParameter="spawn">Spawn</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="moveE">move E</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="moveW">move W</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="moveSE">move SE</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="moveSW">move SW</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="rotateClock">turn clock</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="rotateCounterClock">turn counter-clock</Button>
+	</StackPanel>
+</UserControl>

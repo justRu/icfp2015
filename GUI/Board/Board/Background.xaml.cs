@@ -30,11 +30,9 @@ namespace Board
 		public void Draw(Input input)
 		{
 			host.Children.Clear();
-			var controlWidht = ActualWidth - 50;
-			var controlHeight = ActualHeight - 50;
-
-			var nodeWidth = controlWidht / input.Width;
-			var nodeHeight = controlHeight / input.Height;
+			
+			var nodeWidth = GetNodeWidth(input.Width);
+			var nodeHeight = GetNodeHeight(input.Height);
 
 			var padded = false;
 
@@ -51,6 +49,12 @@ namespace Board
 				}
 				padded = !padded;
 			}
+		}
+
+		public void DrawUnits(Input input)
+		{
+			var nodeWidth = GetNodeWidth(input.Width);
+			var nodeHeight = GetNodeHeight(input.Height);
 
 			// Render units
 			foreach (var unit in input.Units)
@@ -61,6 +65,21 @@ namespace Board
 				}
 				DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
 			}
+		}
+
+		public void DrawUnit(Input input, Unit unit)
+		{
+			Draw(input);
+
+			var nodeWidth = GetNodeWidth(input.Width);
+			var nodeHeight = GetNodeHeight(input.Height);
+
+			// Render unit
+			foreach (var memberPos in unit.Members)
+			{
+				DrawMember(memberPos, nodeWidth, nodeHeight, 16, GenerateColor(unit));
+			}
+			DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
 		}
 
 		private void DrawHex(double xs, double ys, double w, double h, double p, Color color)
@@ -103,6 +122,18 @@ namespace Board
 			Canvas.SetTop(poly, ys);
 
 			host.Children.Add(poly);
+		}
+
+		private double GetNodeWidth(double w)
+		{
+			var controlWidht = ActualWidth - 50;
+			return controlWidht / w;
+		}
+
+		private double GetNodeHeight(double h)
+		{
+			var controlHeight = ActualHeight - 50;
+			return controlHeight / h;
 		}
 
 		private static Color GenerateColor(Unit unit)

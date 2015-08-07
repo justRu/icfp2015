@@ -4,8 +4,12 @@
         xmlns:local="clr-namespace:Board" x:Class="Board.MainWindow"
         Title="MainWindow" Height="700" Width="700" WindowStartupLocation="CenterScreen">
 	<Grid>
-
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		
 		<local:Background x:Name="background" />
-
+		<local:CommandBar x:Name="commandBar" Grid.Row="1"></local:CommandBar>
 	</Grid>
 </Window>
