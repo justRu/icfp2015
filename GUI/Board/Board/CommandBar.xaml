@@ -13,10 +13,12 @@
             </Style>
         </StackPanel.Resources>
 		<Button Command="{Binding ClickCommand}" CommandParameter="spawn">Spawn</Button>
-        <Button Command="{Binding ClickCommand}" CommandParameter="East">Move E</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="West">Move W</Button>
-        <Button Command="{Binding ClickCommand}" CommandParameter="SouthEast">Move SE</Button>
-        <Button Command="{Binding ClickCommand}" CommandParameter="SouthWest">Move SW</Button>
+        <UniformGrid>
+            <Button Command="{Binding ClickCommand}" CommandParameter="East">Move E</Button>
+		    <Button Command="{Binding ClickCommand}" CommandParameter="West">Move W</Button>
+            <Button Command="{Binding ClickCommand}" CommandParameter="SouthEast">Move SE</Button>
+            <Button Command="{Binding ClickCommand}" CommandParameter="SouthWest">Move SW</Button>
+        </UniformGrid>
         <Button Command="{Binding ClickCommand}" CommandParameter="RotateClockwise">Rotate clock</Button>
         <Button Command="{Binding ClickCommand}" CommandParameter="RotateCounterClockwise">Rotate counter-clock</Button>
 	</StackPanel>
