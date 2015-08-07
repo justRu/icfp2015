@@ -7,9 +7,29 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"></RowDefinition>
 			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
-		
+
 		<local:Background x:Name="background" />
-		<local:CommandBar x:Name="commandBar" Grid.Row="1"></local:CommandBar>
+		<local:CommandBar Margin="3"  x:Name="commandBar" Grid.Row="1"></local:CommandBar>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Height="25">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Rectangle}">
+                    <Setter Property="Margin" Value="3"></Setter>
+                    <Setter Property="Width" Value="24"></Setter>
+                    <Setter Property="Height" Value="24"></Setter>
+                </Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                </Style>
+            </StackPanel.Resources>
+            <Rectangle Fill="Blue"></Rectangle>
+            <TextBlock>Filled</TextBlock>
+            <Rectangle Fill="LightBlue"></Rectangle>
+            <TextBlock>Free</TextBlock>
+            <Rectangle Fill="Black"></Rectangle>
+            <TextBlock>Pivot</TextBlock>
+        </StackPanel>
 	</Grid>
 </Window>
