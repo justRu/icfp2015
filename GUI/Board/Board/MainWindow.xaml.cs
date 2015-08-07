@@ -1,12 +1,10 @@
-﻿using Board.Engine;
-using Board.Entities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Board.Entities;
 using Newtonsoft.Json;
+using Solver;
 
 namespace Board
 {
@@ -25,11 +23,26 @@ namespace Board
 
 			_input = JsonConvert.DeserializeObject<Input>(File.ReadAllText("input.json"));
 
-			Loaded += (s, e) => Update();
+			Loaded += (s, e) => WindowLoaded();
 			SizeChanged += (s, e) => Update();
 
 			commandBar.SpawnEvent += commandBarSpawnEvent;
 			commandBar.Move += commandBarMove;
+		}
+
+		private void WindowLoaded()
+		{
+			var req = new ExecutionRequest
+			{
+				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
+				Options = new ExecutionOptions
+				{
+					MaxWidth = 1,
+					MaxHeight = 10
+				}
+			};
+			var response = new SerialSolver().Solve(req);
+			Update();
 		}
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)

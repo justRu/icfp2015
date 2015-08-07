@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Board
+namespace Solver
 {
     /// <summary>
     /// Linear congruential generator.
     /// </summary>
     internal static class Lcg
     {
-        public static T[] Reorder<T>(T[] input, uint seed)
+        public static T Get<T>(T[] input, uint seed, int index)
         {
-            return GetSequence(seed)
-                .Take(input.Length)
-                .Select(index => input[index%input.Length])
-                .ToArray();
+			var k = GetSequence(seed).ElementAt(index);
+	        return input[k%input.Length];
         }
 
         private static IEnumerable<uint> GetSequence(uint start)

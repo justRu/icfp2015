@@ -1,4 +1,4 @@
-﻿namespace Board.Entities
+﻿namespace Solver
 {
 	public struct Position
 	{

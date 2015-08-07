@@ -1,6 +1,4 @@
-﻿using Board.Engine;
-using Board.Entities;
-using Board.Helpers;
+﻿using Board.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Solver;
 
 namespace Board
 {
@@ -75,12 +74,12 @@ namespace Board
 			var nodeWidth = GetNodeWidth(input.Width);
 			var nodeHeight = GetNodeHeight(input.Height);
 
-			var color = Collisions.GetCollision(input, unit) == CollisionType.None ? Colors.Green : Colors.Red;
+			//var color = Collisions.GetCollision(input, unit) == CollisionType.None ? Colors.Green : Colors.Red;
 
 			// Render unit
 			foreach (var memberPos in unit.Members)
 			{
-				DrawMember(memberPos, nodeWidth, nodeHeight, 16, color);
+				DrawMember(memberPos, nodeWidth, nodeHeight, 16, Colors.Green);
 			}
 			DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
 		}

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Board.Entities
+﻿namespace Solver
 {
 	public class Input
 	{
@@ -15,5 +9,9 @@ namespace Board.Entities
 		public Unit[] Units { get; set; }
 
 		public Position[] Filled { get; set; }
+
+		public int SourceLength { get; set; }
+
+		public uint[] SourceSeeds { get; set; }
 	}
 }

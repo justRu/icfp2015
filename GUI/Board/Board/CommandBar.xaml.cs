@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Board.Entities;
+using Solver;
 
 namespace Board
 {
@@ -26,7 +26,6 @@ namespace Board
 				SpawnEvent(this, null);
 				return;
 			}
-
 			MoveDirection move;
 			if (!Enum.TryParse(cmd, true, out move))
 			{
@@ -39,20 +38,11 @@ namespace Board
 
 	public class Controller
 	{
-		private readonly CommandBar _host;
-
-		private ICommand _clickCommand;
-		public ICommand ClickCommand
-		{
-			get
-			{
-				return _clickCommand;
-			}
-		}
+		public ICommand ClickCommand { get; private set; }
 
 		public Controller(CommandBar host)
 		{
-			_clickCommand = new CommandHandler(host);
+			ClickCommand = new CommandHandler(host);
 		}
 	}
 

@@ -79,16 +79,8 @@
     <Compile Include="CommandBar.xaml.cs">
       <DependentUpon>CommandBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Collisions.cs" />
-    <Compile Include="Engine\CollisionType.cs" />
-    <Compile Include="Engine\Moving.cs" />
     <Compile Include="Helpers\CommandEncoding.cs" />
-    <Compile Include="Entities\Input.cs" />
-    <Compile Include="Entities\MoveDirection.cs" />
-    <Compile Include="Entities\Position.cs" />
-    <Compile Include="Entities\Unit.cs" />
     <Compile Include="Helpers\ColorGenerator.cs" />
-    <Compile Include="Helpers\Lcg.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -124,6 +116,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Solver\Solver.csproj">
+      <Project>{96d5eaa6-4a96-4add-bdbf-4a3792018d5f}</Project>
+      <Name>Solver</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

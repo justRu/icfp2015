@@ -1,8 +1,6 @@
 ﻿using System.Linq;
-using Board.Entities;
-using System;
 
-namespace Board.Engine
+namespace Solver
 {
 	public static class Moving
 	{
@@ -40,6 +38,13 @@ namespace Board.Engine
 		{
 			var maxX = unit.Members.Max(t => t.X);
 			int dx = (input.Width - maxX - 1)/2;
+			return dx == 0 ? unit : Translate(unit, dx, 0);
+		}
+
+		public static Unit Spawn(this Field field, Unit unit)
+		{
+			var maxX = unit.Members.Max(t => t.X);
+			int dx = (field.Width - maxX - 1) / 2;
 			return dx == 0 ? unit : Translate(unit, dx, 0);
 		}
 
