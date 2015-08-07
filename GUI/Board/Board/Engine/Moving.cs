@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Board.Entities;
 
 namespace Board.Engine
@@ -34,6 +33,13 @@ namespace Board.Engine
 				Pivot = unit.Pivot,
 				Members = unit.Members.Select(member => Rotate(member, unit.Pivot, degrees)).ToArray()
 			};
+		}
+
+		internal static Unit Spawn(Input input, Unit unit)
+		{
+			var maxX = unit.Members.Max(t => t.X);
+			int dx = (input.Width - maxX - 1)/2;
+			return dx == 0 ? unit : Translate(unit, dx, 0);
 		}
 
 		private static Unit Translate(Unit unit, int dx, int dy)

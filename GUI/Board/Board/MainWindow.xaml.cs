@@ -34,7 +34,7 @@ namespace Board
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)
 		{
-			_currentUnit = _input.Units.First();
+			_currentUnit = Moving.Spawn(_input, _input.Units.First());
 			background.DrawUnit(_input, _currentUnit);
 		}
 
