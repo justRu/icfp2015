@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Board.Entities;
+using System;
 
 namespace Board.Engine
 {
@@ -18,20 +19,20 @@ namespace Board.Engine
 				case MoveDirection.West:
 					return Translate(unit, -1, 0);
 				case MoveDirection.RotateClockwise:
-					return Rotate(unit, 60);
+					return Rotate(unit, true);
 				case MoveDirection.RotateCounterClockwise:
-					return Rotate(unit, -60);
+					return Rotate(unit, false);
 				default:
 					return unit;
 			}
 		}
 
-		internal static Unit Rotate(Unit unit, double degrees)
+		internal static Unit Rotate(Unit unit, bool direction)
 		{
 			return new Unit
 			{
 				Pivot = unit.Pivot,
-				Members = unit.Members.Select(member => Rotate(member, unit.Pivot, degrees)).ToArray()
+				Members = unit.Members.Select(member => Rotate(member, unit.Pivot, direction)).ToArray()
 			};
 		}
 
@@ -62,24 +63,66 @@ namespace Board.Engine
 			};
 		}
 
-		private static Position Rotate(Position point, Position pivot, double degrees)
+		private static Position Rotate(Position point, Position pivot, bool direction)
 		{
 			var relCol = point.X - pivot.X;
 			var relRow = point.Y - pivot.Y;
+			var odd = (pivot.Y % 2) != 0;
 
-			var x = relCol - (relRow + (relRow & 1)) / 2;
-			var z = relRow;
-			var y = -x-z;
+			var cube = ConvertToCube(odd, relCol, relRow);
 
-			var nx = -z;
-			var ny = -x;
-			var nz = -y;
+			CubePosition rotated;
 
-			var col = nx + (nz + (nz & 1)) / 2;
-			var row = nz;
+			if (direction)
+			{
+				rotated.X = -cube.Z;
+				rotated.Y = -cube.X;
+				rotated.Z = -cube.Y;
+			}
+			else
+			{
+				rotated.X = -cube.Y;
+				rotated.Y = -cube.Z;
+				rotated.Z = -cube.X;
+			}
 
-			var r = new Position { X = pivot.X + col, Y = pivot.Y + row };
+			var offsets = ConvertToOffset(odd, rotated);
+
+			var r = new Position { X = pivot.X + offsets.X, Y = pivot.Y + offsets.Y };
 			return r;
+		}
+
+		/// <summary>
+		/// Special thanks for http://www.redblobgames.com/grids/hexagons/#conversions
+		/// </summary>
+		private static CubePosition ConvertToCube(bool odd, int col, int row)
+		{
+			var x = col - (row - (row & 1) * (odd ? -1 : 1)) / 2;
+			var z = row;
+			var y = -x - z;
+			return new CubePosition(x, y, z);
+		}
+
+		private static Position ConvertToOffset(bool odd, CubePosition pos)
+		{
+			var col = pos.X + (pos.Z - (pos.Z & 1) * (odd ? -1 : 1)) / 2;
+			var row = pos.Z;
+
+			return new Position { X = col, Y = row };
+		}
+
+		private struct CubePosition
+		{
+			internal int X;
+			internal int Y;
+			internal int Z;
+
+			internal CubePosition(int x, int y, int z)
+			{
+				X = x;
+				Y = y;
+				Z = z;
+			}
 		}
 	}
 }
