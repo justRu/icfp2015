@@ -64,9 +64,9 @@ namespace Board
 			switch (direction)
 			{
 				case MoveDirection.SE:
-					return Translate(unit, 1, 1);
+					return Translate(unit, (unit.Pivot.Y % 2) == 0 ? 0 : 1, 1);
 				case MoveDirection.SW:
-					return Translate(unit, -1, 1);
+					return Translate(unit, (unit.Pivot.Y % 2) == 0 ? -1 : 0, 1);
 				case MoveDirection.E:
 					return Translate(unit, 1, 0);
 				case MoveDirection.W:
