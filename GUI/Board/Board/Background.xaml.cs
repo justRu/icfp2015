@@ -1,4 +1,5 @@
 ﻿using Board.Entities;
+using Board.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace Board
 			{
 				foreach (var memberPos in unit.Members)
 				{
-					DrawMember(memberPos, nodeWidth, nodeHeight, 16, Colors.LightGreen);
+					DrawMember(memberPos, nodeWidth, nodeHeight, 16, GenerateColor(unit));
 				}
 				DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
 			}
@@ -96,6 +97,12 @@ namespace Board
 			Canvas.SetTop(poly, ys);
 
 			host.Children.Add(poly);
+		}
+
+		private static Color GenerateColor(Unit unit)
+		{
+			var key = string.Join("_", unit.Members.Concat(new [] {unit.Pivot}).Select(m => string.Format("{0}.{1}", m.X, m.Y)));
+			return ColorGenerator.GetColor(key);
 		}
 	}
 }
