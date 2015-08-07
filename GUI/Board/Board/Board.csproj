@@ -79,6 +79,7 @@
     <Compile Include="CommandBar.xaml.cs">
       <DependentUpon>CommandBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Engine\Moving.cs" />
     <Compile Include="Entities\Input.cs" />
     <Compile Include="Entities\MoveDirection.cs" />
     <Compile Include="Entities\Position.cs" />
