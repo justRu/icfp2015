@@ -27,27 +27,33 @@ namespace Board
 			InitializeComponent();
 		}
 
-		public void Draw(int w, int h, Unit[] units)
+		public void Draw(Input input)
 		{
 			host.Children.Clear();
 			var controlWidht = ActualWidth - 50;
 			var controlHeight = ActualHeight - 50;
 
-			var nodeWidth = controlWidht / w;
-			var nodeHeight = controlHeight / w;
+			var nodeWidth = controlWidht / input.Width;
+			var nodeHeight = controlHeight / input.Height;
 
 			var padded = false;
 
-			for (var topIdx = 0; topIdx < h; topIdx++)
+			var filledHash = new HashSet<Position>(input.Filled);
+			
+
+			// Render hexs
+			for (var topIdx = 0; topIdx < input.Height; topIdx++)
 			{
-				for (var leftIdx = 0; leftIdx < w; leftIdx++)
+				for (var leftIdx = 0; leftIdx < input.Width; leftIdx++)
 				{
-					DrawHex((leftIdx * nodeWidth) + (padded ? nodeWidth / 2 : 0), topIdx * nodeHeight, nodeWidth, nodeHeight, 4);
+					DrawHex((leftIdx * nodeWidth) + (padded ? nodeWidth / 2 : 0), topIdx * nodeHeight, nodeWidth, nodeHeight, 4,
+						filledHash.Contains(new Position { X = leftIdx, Y = topIdx}) ? Colors.Blue : Colors.LightBlue);
 				}
 				padded = !padded;
 			}
 
-			foreach (var unit in units)
+			// Render units
+			foreach (var unit in input.Units)
 			{
 				foreach (var memberPos in unit.Members)
 				{
@@ -57,7 +63,7 @@ namespace Board
 			}
 		}
 
-		private void DrawHex(double xs, double ys, double w, double h, double p)
+		private void DrawHex(double xs, double ys, double w, double h, double p, Color color)
 		{
 			var poly = new Polygon();
 			
@@ -70,7 +76,7 @@ namespace Board
 			poly.Points.Add(new Point(p, h / 3));
 			poly.Points.Add(new Point(w / 2, p));
 
-			poly.Fill = Brushes.LightBlue;
+			poly.Fill = new SolidColorBrush(color);
 			
 			Canvas.SetLeft(poly, xs);
 			Canvas.SetTop(poly, ys);

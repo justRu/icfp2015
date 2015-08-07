@@ -37,7 +37,7 @@ namespace Board
 
 		private void Update()
 		{
-			background.Draw(_input.Width, _input.Height, _input.Units);
+			background.Draw(_input);
 		}
 	}
 }

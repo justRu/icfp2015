@@ -13,5 +13,7 @@ namespace Board.Entities
 		public int Width { get; set; }
 
 		public Unit[] Units { get; set; }
+
+		public Position[] Filled { get; set; }
 	}
 }
