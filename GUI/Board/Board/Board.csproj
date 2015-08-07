@@ -79,6 +79,8 @@
     <Compile Include="CommandBar.xaml.cs">
       <DependentUpon>CommandBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Engine\Collisions.cs" />
+    <Compile Include="Engine\CollisionType.cs" />
     <Compile Include="Engine\Moving.cs" />
     <Compile Include="Entities\Input.cs" />
     <Compile Include="Entities\MoveDirection.cs" />
