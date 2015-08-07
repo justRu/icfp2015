@@ -84,6 +84,7 @@
     <Compile Include="Entities\Position.cs" />
     <Compile Include="Entities\Unit.cs" />
     <Compile Include="Helpers\ColorGenerator.cs" />
+    <Compile Include="Helpers\Lcg.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
