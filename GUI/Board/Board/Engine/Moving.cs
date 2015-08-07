@@ -57,19 +57,22 @@ namespace Board.Engine
 
 		private static Position Rotate(Position point, Position pivot, double degrees)
 		{
-#warning I've been looking you all of my life
-			var radians = degrees * Math.PI / 180;
-			var relX = point.X - pivot.X;
-			var relY = point.Y - pivot.Y;
+			var relCol = point.X - pivot.X;
+			var relRow = point.Y - pivot.Y;
 
-			var nrelx = relX * Math.Cos(radians) - relY * Math.Sin(radians);
-			var nrely = relX * Math.Sin(radians) + relY * Math.Cos(radians);
+			var x = relCol - (relRow + (relRow & 1)) / 2;
+			var z = relRow;
+			var y = -x-z;
 
-			var len = Math.Sqrt(Math.Pow(relX, 2) + Math.Pow(relY, 2));
+			var nx = -z;
+			var ny = -x;
+			var nz = -y;
 
-			var absX = (pivot.X + nrelx) * len;
-			var absY = (pivot.Y + nrely) * len;
-			return new Position { X = (int)absX, Y = (int)absY };
+			var col = nx + (nz + (nz & 1)) / 2;
+			var row = nz;
+
+			var r = new Position { X = pivot.X + col, Y = pivot.Y + row };
+			return r;
 		}
 	}
 }
