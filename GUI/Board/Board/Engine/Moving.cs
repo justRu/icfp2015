@@ -3,9 +3,9 @@ using Board.Entities;
 
 namespace Board.Engine
 {
-	internal static class Moving
+	public static class Moving
 	{
-		internal static Unit Translate(Unit unit, MoveDirection direction)
+        public static Unit Translate(this Unit unit, MoveDirection direction)
 		{
 			switch (direction)
 			{
@@ -26,7 +26,7 @@ namespace Board.Engine
 			}
 		}
 
-		internal static Unit Rotate(Unit unit, double degrees)
+        public static Unit Rotate(this Unit unit, double degrees)
 		{
 			return new Unit
 			{
@@ -35,14 +35,14 @@ namespace Board.Engine
 			};
 		}
 
-		internal static Unit Spawn(Input input, Unit unit)
+        public static Unit Spawn(Input input, Unit unit)
 		{
 			var maxX = unit.Members.Max(t => t.X);
 			int dx = (input.Width - maxX - 1)/2;
 			return dx == 0 ? unit : Translate(unit, dx, 0);
 		}
 
-		private static Unit Translate(Unit unit, int dx, int dy)
+        public static Unit Translate(this Unit unit, int dx, int dy)
 		{
 			var pivot = new Position
 			{
@@ -62,7 +62,7 @@ namespace Board.Engine
 			};
 		}
 
-		private static Position Rotate(Position point, Position pivot, double degrees)
+		public static Position Rotate(Position point, Position pivot, double degrees)
 		{
 			var relCol = point.X - pivot.X;
 			var relRow = point.Y - pivot.Y;

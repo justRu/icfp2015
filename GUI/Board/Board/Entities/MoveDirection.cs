@@ -1,8 +1,8 @@
 ﻿namespace Board.Entities
 {
-	public enum MoveDirection
+	public enum MoveDirection: byte
 	{
-		East,
+		East=1,
 		West,
 		SouthEast,
 		SouthWest,
