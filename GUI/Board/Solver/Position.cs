@@ -2,7 +2,7 @@
 
 namespace Solver
 {
-	public struct Position : IEquatable<Position>
+	public struct Position
 	{
 		public int X;
 		public int Y;
@@ -13,9 +13,11 @@ namespace Solver
 			Y = y;
 		}
 
-		public bool Equals(Position other)
+		public double DistanceTo(Position other)
 		{
-			return X == other.X && Y == other.Y;
+			int dx = (other.X - X);
+			int dy = (other.Y - Y);
+			return Math.Sqrt(dx*dx + dy*dy);
 		}
 	}
 }

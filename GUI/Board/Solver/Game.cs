@@ -58,21 +58,22 @@ namespace Solver
         {
 	        var field = snapshot.Field;
             var filled = new List<int>();
-            for (int i = lockedUnit.GetMinY(); i <= lockedUnit.GetMaxY(); i++)
+            for (int y = lockedUnit.GetMinY(); y <= lockedUnit.GetMaxY(); y++)
             {
-                if (snapshot.Field.IsLineFull(i))
-                    filled.Add(i);
+                if (snapshot.Field.IsLineFull(y))
+                    filled.Add(y);
             }
 	        if (filled.Count > 0)
 	        {
 		        int removed = 0;
 		        foreach (var row in filled.OrderByDescending(i => i))
 		        {
-			        for (int i = 0; i < row + removed; i++)
+					// from this row up shift all rows down
+			        for (int y = row + removed - 1; y >= 0; y--)
 			        {
-						for (int j = 0; j < field.Width; j++)
+						for (int x = 0; x < field.Width; x++)
 						{
-							field[j, i+1] = field[j, i];
+							field[x, y+1] = field[x, y];
 						}
 			        }
 			        removed++;

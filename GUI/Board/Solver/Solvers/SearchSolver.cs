@@ -31,9 +31,11 @@ namespace Solver
 			if (snapshot == null) // illegal move
 				yield break;
             var estimate = SnapshotEvaluate(snapshot);
-            // stop recursion
-            if (snapshot.Finished || depth <= 0 || estimate < minEstimate) // TODO: some diff
-		    {
+            
+			bool nextUnit = snapshot.UnitIndex > baseSnapshot.UnitIndex;
+			// stop recursion
+			if (snapshot.Finished || depth <= 0 || estimate < minEstimate || nextUnit) // TODO: some diff
+			{
 			    yield return new ExecutionResult
 			    {
 				    Commands = new [] { move.Value },
@@ -77,7 +79,7 @@ namespace Solver
 
 	    private static double SnapshotEvaluate(Snapshot snapshot, params MoveDirection[] nextMoves)
 	    {
-			return snapshot.Score - GetHiddenHoles(snapshot.Field) * 50
+			return snapshot.Score - GetHiddenHoles(snapshot.Field) * 20
 				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit);
 	    }
 
@@ -95,27 +97,53 @@ namespace Solver
 
 			int center = (maxX + minX) / 2;
 
+			var attractor = GetBottomOpenPosition(field);
+
+			double attractorDistance = attractor.DistanceTo(unit.Pivot);
+			double attractorPenalty = attractorDistance < 4
+				? 0
+				: attractor.DistanceTo(unit.Pivot);
+
 			int centerPenalty = 0;
 			// TODO: get max height of filled cells
-			if (field.Width - maxX < marginBottom || minX < marginBottom)
-			{
-				centerPenalty = Math.Abs(center - field.Width / 2) ;
-			}
+			//if (field.Width - maxX < marginBottom || minX < marginBottom)
+			//{
+			//	centerPenalty = Math.Abs(center - field.Width / 2) ;
+			//}
 
 			// TODO: calculate the number of adjacent cells
 			int adjacencyBonus = 0; // TODO: get max height of filled cells
 			if ((maxY == field.Height - 1))
 			{
-				adjacencyBonus += 5;
+				adjacencyBonus += 3;
 			}
 
+			// TODO: check if maxY members touch edge or filled cell
 			foreach (var position in unit.Members)
 			{
 				if (position.X == 0 || position.X == field.Width - 1)
-					adjacencyBonus += 5;
+					adjacencyBonus += 3;
 			}
 
-			return adjacencyBonus - depth * 10 - centerPenalty * 1;
+			return adjacencyBonus - depth * 5 - centerPenalty * 1 - attractorPenalty * 10;
+		}
+
+		private static Position GetBottomOpenPosition(Field field)
+		{
+			Position min = new Position(-1, field.Height);
+			for (int x = 0; x < field.Width; x++)
+			{
+				int y = 0;
+				while (y < field.Height && !field[x, y])
+				{
+					y++;
+				}
+				if (y <= min.Y)
+				{
+					min = new Position(x, y);
+				}
+			}
+			return min;
 		}
 
 		private static double GetHiddenHoles(Field field)
