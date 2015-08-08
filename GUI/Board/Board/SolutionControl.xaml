@@ -12,6 +12,9 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical">
+            <TextBlock Text="{Binding CurrentSnapshot.Score, StringFormat=Final score: {0}}"></TextBlock>
+            <TextBlock Text="{Binding CurrentSnapshot.Finished, StringFormat=Finished: {0}}"></TextBlock>
+            <TextBlock Text="{Binding CurrentSnapshot.UnitIndex, StringFormat=Unit: {0}}"></TextBlock>
             <TextBlock Text="{Binding Commands.Length, StringFormat=Commands: {0}}"></TextBlock>
             <TextBlock Text="{Binding CurrentIndex, StringFormat=Current command: {0}}"></TextBlock>
             <Button Command="{Binding ResetCommand}">To start</Button>

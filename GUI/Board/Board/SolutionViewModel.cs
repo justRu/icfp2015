@@ -9,6 +9,7 @@ namespace Board
 	public sealed class SolutionViewModel : ViewModelBase
 	{
 		private int _currentIndex;
+		private Snapshot _currentSnapshot;
 
 		public SolutionViewModel(ExecutionResult result, Snapshot initialSnapshot)
 		{
@@ -88,7 +89,11 @@ namespace Board
 
 		public Snapshot InitialSnapshot { get; set; }
 
-		public Snapshot CurrentSnapshot { get; set; }
+		public Snapshot CurrentSnapshot
+		{
+			get { return _currentSnapshot; }
+			set { SetAndRaisePropertyChanged(ref _currentSnapshot, value); }
+		}
 
 		public MoveDirection[] Commands { get; set; }
 

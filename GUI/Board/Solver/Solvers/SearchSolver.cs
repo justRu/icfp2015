@@ -101,13 +101,20 @@ namespace Solver
 				centerPenalty = Math.Abs(center - field.Width / 2) * 3;
 			}
 
-			// TODO: calculate the number of adjacent edges
+			// TODO: calculate the number of adjacent cells
 			int adjacencyBonus = 0; // TODO: get max height of filled cells
-			if ((maxY == field.Height - 1) && (minX == 0 || maxX == field.Width - 1))
+			if ((maxY == field.Height - 1))
 			{
-				adjacencyBonus += 2;
+				adjacencyBonus += 10;
 			}
-			return adjacencyBonus - depth * 10 - centerPenalty;
+
+			foreach (var position in unit.Members)
+			{
+				if (position.X == 0 || position.X == field.Width - 1)
+					adjacencyBonus += 3;
+			}
+
+			return adjacencyBonus - depth * 20 - centerPenalty;
 		}
 
 		private static double GetHiddenHoles(Field field)
