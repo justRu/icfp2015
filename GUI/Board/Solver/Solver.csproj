@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game.cs" />
     <Compile Include="SerialSolver.cs" />
     <Compile Include="Collisions.cs" />
     <Compile Include="CollisionType.cs" />

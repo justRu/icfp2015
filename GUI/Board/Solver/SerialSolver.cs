@@ -19,7 +19,9 @@ namespace Solver
 	    private static IEnumerable<ExecutionResult> Calculate(
 			Snapshot baseSnapshot, MoveDirection? move, int maxWidth, int depth, double minEstimate)
 	    {
-			var snapshot = move.HasValue ? baseSnapshot.New(move.Value) : baseSnapshot;
+			var snapshot = move.HasValue
+				? Game.MakeMove(baseSnapshot, move.Value)
+				: baseSnapshot;
             var estimate = SnapshotEvaluate(snapshot);
             // stop recursion
             if (snapshot.Finished || depth <= 0 || estimate < minEstimate) // TODO: some diff
@@ -41,7 +43,6 @@ namespace Solver
 				.Take(maxWidth);
 		    foreach (var result in childResults)
 		    {
-				
 				yield return new ExecutionResult
 				{
 					Commands = move.HasValue
