@@ -35,6 +35,16 @@ namespace Solver
 			set { this[x + y * Width] = value; }
 		}
 
+		public bool IsLineFull(int y)
+		{
+			for (int i = 0; i < Width; i++)
+			{
+				if (!this[i, y])
+					return false;
+			}
+			return true;
+		}
+
 		private bool this[int offset]
 		{
 			get { return (Cells[offset >> 3] & (1 << (offset & 7))) != 0; }

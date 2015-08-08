@@ -23,7 +23,7 @@ namespace Solver
 			{
 				snapshot.Field[pos.X, pos.Y] = true; // lock position
 			}
-			// TODO: clear row, update cleared rows count, move rows down!
+			DeleteLines(snapshot, unit);
 			snapshot.UnitIndex++;
 			if (snapshot.UnitIndex >= snapshot.UnitsQueue.MaxUnits)
 			{
@@ -41,6 +41,19 @@ namespace Solver
 					snapshot.CurrentUnit = nextUnit;
 				}
 			}
+		}
+
+		// TODO: implement
+		private static Snapshot DeleteLines(Snapshot snapshot, Unit lockedUnit)
+		{
+			for (int i = lockedUnit.GetMinY(); i <= lockedUnit.GetMaxY(); i++)
+			{
+				bool lineFilled = snapshot.Field.IsLineFull(i);
+			}
+			// TODO: shift
+			// TODO: update score
+			// TOOD: save prev deleted lines to multiply score
+			return snapshot;
 		}
 	}
 }
