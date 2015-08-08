@@ -68,7 +68,7 @@ namespace Board
 			while (CurrentIndex < Commands.Length)
 			{
 				MoveNext();
-				await Task.Delay(50);
+				await Task.Delay(20);
 			}
 		}
 

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 
 namespace Solver
 {
@@ -10,7 +12,7 @@ namespace Solver
         {
             var snapshot = new Snapshot(prevSnapshot); // clone
             var unit = snapshot.CurrentUnit.Translate(move);
-			if (snapshot.UnitHistory.Any(u => unit.Equals(u)))
+			if (snapshot.UnitHistory.Any(u => unit.Equals(u)) || unit.Equals(snapshot.CurrentUnit))
 				return null;
             if (Collisions.GetCollision(snapshot.Field, unit) != CollisionType.None)
             {
@@ -54,28 +56,40 @@ namespace Solver
         // TODO: implement
         private static Snapshot DeleteLines(Snapshot snapshot, Unit lockedUnit)
         {
+	        var field = snapshot.Field;
             var filled = new List<int>();
             for (int i = lockedUnit.GetMinY(); i <= lockedUnit.GetMaxY(); i++)
             {
                 if (snapshot.Field.IsLineFull(i))
                     filled.Add(i);
             }
-            if (filled.Any())
-            {
-                const int size = sizeof (byte);
-                var cleared = snapshot.Field
-                    .GetEnumerable()
-                    .Select((val, i) => new {val, i})
-                    .GroupBy((pair) => pair.i/size)
-                    .Where((group, i) => !filled.Contains(i))
-                    .SelectMany(group => group.Select(pair => pair.val));
-                snapshot.Field.SaveEnumerable(Enumerable.Repeat(true, filled.Count*size).Concat(cleared));
-            }
-            // TODO: update score
-            // TOOD: save prev deleted lines to multiply score
+	        if (filled.Count > 0)
+	        {
+		        int removed = 0;
+		        foreach (var row in filled.OrderByDescending(i => i))
+		        {
+			        for (int i = 0; i < row + removed; i++)
+			        {
+						for (int j = 0; j < field.Width; j++)
+						{
+							field[j, i+1] = field[j, i];
+						}
+			        }
+			        removed++;
+		        }
+	        }
+			snapshot.Score += GetMoveScore(snapshot, lockedUnit, filled.Count);
+			snapshot.PrevUnitClearedLines = filled.Count;
             return snapshot;
         }
 
-
+		private static int GetMoveScore(Snapshot snapshot, Unit lockedUnit, int linesFilled)
+	    {
+			int points = lockedUnit.Members.Length + 100 * (1 + linesFilled) * linesFilled / 2;
+			int lineBonus = snapshot.PrevUnitClearedLines == 0
+				? 0
+				: (int)Math.Floor((snapshot.PrevUnitClearedLines - 1) * points / (double)10);
+			return points + lineBonus;
+	    }
     }
 }

@@ -61,7 +61,6 @@ namespace Solver
         const byte One = 1;
         public IEnumerable<bool> GetEnumerable()
         {
-            
             int maxCount = Width * Height;
             foreach (var cell in Cells)
             {
@@ -82,7 +81,7 @@ namespace Solver
             //clear
             Cells = new byte[Cells.Length];
             var enumerator = input.GetEnumerator();
-            for(int i =0; i< Cells.Length;i++) 
+            for(int i =0; i< Cells.Length;i++)
             {
                 byte shifted = 1;
                 for (int shift = 0; shift < 8; shift++)

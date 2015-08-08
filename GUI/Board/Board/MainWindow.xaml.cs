@@ -29,13 +29,13 @@ namespace Board
 				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
 				Options = new ExecutionOptions
 				{
-					MaxWidth = 3,
+					MaxWidth = 5,
 					MaxHeight = 6,
 					MinEstimation = double.MinValue
 				}
 			};
 
-			_solver = new IterativeSearchSolver(20); //new TraverseSolver();
+			_solver = new IterativeSearchSolver(350); //new TraverseSolver();
 
 			SizeChanged += (s, e) => Update();
 

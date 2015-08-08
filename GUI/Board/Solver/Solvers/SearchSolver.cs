@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Configuration;
+using System.Threading.Tasks;
 
 namespace Solver
 {
@@ -41,11 +42,26 @@ namespace Solver
 			    };
 				yield break;
 		    }
+
             var candidateMoves = (MoveDirection[])Enum.GetValues(typeof (MoveDirection));
-			var childResults = candidateMoves
-				.SelectMany(m => Calculate(snapshot, m, maxWidth, depth - 1, estimate)) // recursion
-				.OrderByDescending(r => r.Estimate)
-				.Take(maxWidth);
+
+		    IEnumerable<ExecutionResult> childResults;
+			//if (depth >= 8)
+			//{
+			//	var tasks = candidateMoves
+			//		.Select(m => Task.Run(() => Calculate(snapshot, m, maxWidth, depth - 1, estimate)))
+			//		.ToArray();
+
+			//	Task.WaitAll(tasks);
+			//	childResults = tasks.SelectMany(t => t.Result);
+
+			//}
+			//else
+		    {
+				childResults = candidateMoves
+					.SelectMany(m => Calculate(snapshot, m, maxWidth, depth - 1, estimate)); // recursion;
+		    }
+			childResults = childResults.OrderByDescending(r => r.Estimate).Take(maxWidth);
 		    foreach (var result in childResults)
 		    {
 				yield return new ExecutionResult
@@ -61,27 +77,56 @@ namespace Solver
 
 	    private static double SnapshotEvaluate(Snapshot snapshot, params MoveDirection[] nextMoves)
 	    {
-            int minX = snapshot.CurrentUnit.GetMinX();
-			int maxX = snapshot.CurrentUnit.GetMaxX();
-            int minY = snapshot.CurrentUnit.GetMinY();
-            int maxY = snapshot.CurrentUnit.GetMaxY();
-            int depth = snapshot.Field.Height - minY;
+			return snapshot.Score - GetHiddenHoles(snapshot.Field) * 20
+				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit);
+	    }
 
-            int width = maxX - maxY;
-            int marginBottom = snapshot.Field.Height - maxY;
+		private static double GetUnitPositionBonus(Field field, Unit unit)
+		{
+			int minX = unit.GetMinX();
+			int maxX = unit.GetMaxX();
+			int minY = unit.GetMinY();
+			int maxY = unit.GetMaxY();
+			int depth = field.Height - minY;
 
-            int center = (maxX + minX) / 2;
+			int width = maxX - maxY;
+			int marginBottom = field.Height - maxY;
 
-            int centerPenalty = 0;
-            // TODO: get max height of filled cells
-            if (snapshot.Field.Width - maxX < marginBottom || minX < marginBottom)
-            {
-                centerPenalty = Math.Abs(center - snapshot.Field.Width / 2) * 3;
-            }
+			int center = (maxX + minX) / 2;
+
+			int centerPenalty = 0;
+			// TODO: get max height of filled cells
+			if (field.Width - maxX < marginBottom || minX < marginBottom)
+			{
+				centerPenalty = Math.Abs(center - field.Width / 2) * 3;
+			}
 
 			// TODO: calculate the number of adjacent edges
+			int adjacencyBonus = 0; // TODO: get max height of filled cells
+			if ((maxY == field.Height - 1) && (minX == 0 || maxX == field.Width - 1))
+			{
+				adjacencyBonus += 2;
+			}
+			return adjacencyBonus - depth * 10 - centerPenalty;
+		}
 
-			return snapshot.Score - depth - centerPenalty;
-	    }
+		private static double GetHiddenHoles(Field field)
+		{
+			int result = 0;
+			for (int y = 0; y < field.Height - 1; y++)
+			{
+				for (int x = 0; x < field.Width - 1; x++)
+				{
+					if (field[x, y] && field[x + 1, y])
+					{
+						var leftUnit = new Unit {Members = new[] {new Position(x, y)}};
+						var pos = leftUnit.Translate(MoveDirection.SouthEast).Members[0];
+						if (!field[pos.X, pos.Y])
+							result ++;
+					}
+				}
+			}
+			return result;
+		}
     }
 }

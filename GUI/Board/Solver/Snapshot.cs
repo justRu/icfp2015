@@ -18,6 +18,8 @@ namespace Solver
 
 		public List<Unit> UnitHistory { get; set; }
 
+		public int PrevUnitClearedLines { get; set; }
+
 		/// <summary>
 		/// Initial constructor.
 		/// </summary>
