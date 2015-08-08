@@ -29,8 +29,8 @@ namespace Board
 				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
 				Options = new ExecutionOptions
 				{
-					MaxWidth = 7,
-					MaxHeight = 6,
+					MaxWidth = 3,
+					MaxHeight = 8,
 					MinEstimation = double.MinValue
 				}
 			};

@@ -77,7 +77,7 @@ namespace Solver
 
 	    private static double SnapshotEvaluate(Snapshot snapshot, params MoveDirection[] nextMoves)
 	    {
-			return snapshot.Score - GetHiddenHoles(snapshot.Field) * 20
+			return snapshot.Score - GetHiddenHoles(snapshot.Field) * 50
 				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit);
 	    }
 
@@ -90,6 +90,7 @@ namespace Solver
 			int depth = field.Height - minY;
 
 			int width = maxX - maxY;
+
 			int marginBottom = field.Height - maxY;
 
 			int center = (maxX + minX) / 2;
@@ -98,23 +99,23 @@ namespace Solver
 			// TODO: get max height of filled cells
 			if (field.Width - maxX < marginBottom || minX < marginBottom)
 			{
-				centerPenalty = Math.Abs(center - field.Width / 2) * 3;
+				centerPenalty = Math.Abs(center - field.Width / 2) ;
 			}
 
 			// TODO: calculate the number of adjacent cells
 			int adjacencyBonus = 0; // TODO: get max height of filled cells
 			if ((maxY == field.Height - 1))
 			{
-				adjacencyBonus += 10;
+				adjacencyBonus += 5;
 			}
 
 			foreach (var position in unit.Members)
 			{
 				if (position.X == 0 || position.X == field.Width - 1)
-					adjacencyBonus += 3;
+					adjacencyBonus += 5;
 			}
 
-			return adjacencyBonus - depth * 20 - centerPenalty;
+			return adjacencyBonus - depth * 10 - centerPenalty * 1;
 		}
 
 		private static double GetHiddenHoles(Field field)
