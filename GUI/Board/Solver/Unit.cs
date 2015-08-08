@@ -59,5 +59,15 @@ namespace Solver
 			}
 			return res;
 		}
+
+		public int GetWidth()
+		{
+			return GetMaxX() - GetMinX();
+		}
+
+		public int GetHeight()
+		{
+			return GetMaxY() - GetMinY();
+		}
 	}
 }

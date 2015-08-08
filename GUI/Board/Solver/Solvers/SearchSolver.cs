@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Solver
 {
-	public class SerialSolver : ISolver
+	public class SearchSolver : ISolver
     {
 		public IEnumerable<ExecutionResult> Solve(ExecutionRequest request)
 		{
@@ -28,7 +28,7 @@ namespace Solver
 		    {
 			    yield return new ExecutionResult
 			    {
-				    Commands = new MoveDirection[0],
+				    Commands = new [] { move.Value },
 				    Estimation = estimate,
 					Snapshot = snapshot
 			    };
@@ -56,10 +56,10 @@ namespace Solver
 
 	    private static double SnapshotEvaluate(Snapshot snapshot, params MoveDirection[] nextMoves)
 	    {
-            int minX = snapshot.CurrentUnit.Members.Min(p => p.X);
-            int maxX = snapshot.CurrentUnit.Members.Max(p => p.X);
-            int minY = snapshot.CurrentUnit.Members.Min(p => p.Y);
-            int maxY = snapshot.CurrentUnit.Members.Max(p => p.Y);
+            int minX = snapshot.CurrentUnit.GetMinX();
+			int maxX = snapshot.CurrentUnit.GetMaxX();
+            int minY = snapshot.CurrentUnit.GetMinY();
+            int maxY = snapshot.CurrentUnit.GetMaxY();
             int depth = snapshot.Field.Height - minY;
 
             int width = maxX - maxY;
@@ -73,6 +73,8 @@ namespace Solver
             {
                 centerPenalty = Math.Abs(center - snapshot.Field.Width / 2) * 3;
             }
+
+			// TODO: calculate the number of adjacent edges
 
 			return snapshot.Score - depth - centerPenalty;
 	    }
