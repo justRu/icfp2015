@@ -56,15 +56,28 @@ namespace Board
 			ExecutionResult currentResultDisplay = null;
 			var enumerator = results.GetEnumerator();
 			IEnumerator<MoveDirection> moveEnumerator = null;
+
+			Action showInSnapshot = () =>
+			{
+				if (currentResultDisplay != null)
+				{
+					movingSnapshot = prevSnapshot;
+					moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
+				}
+				ShowSnapshot(prevSnapshot);
+			};
+
 			commandBar.NextSolverStep += (s, ee) =>
 				{
 					if (enumerator.MoveNext())
 					{
+						movingSnapshot = prevSnapshot;
 						if (currentResultDisplay != null)
 						{
 							prevSnapshot = currentResultDisplay.Snapshot;
 						}
 						currentResultDisplay = enumerator.Current;
+						showInSnapshot();
 						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
 						log.LogMessage("Got commands:");
 						log.LogMessage(currentResultDisplay.Commands);
@@ -94,15 +107,7 @@ namespace Board
 					}
 				};
 
-			commandBar.ShowInSnapshot += (s, ee) =>
-				{
-					if (currentResultDisplay != null)
-					{
-						movingSnapshot = prevSnapshot;
-						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
-					}
-					ShowSnapshot(prevSnapshot);
-				};
+			commandBar.ShowInSnapshot += (s, ee) => showInSnapshot();
 
 			commandBar.ShowOutSnapshot += (s, ee) =>
 				{
