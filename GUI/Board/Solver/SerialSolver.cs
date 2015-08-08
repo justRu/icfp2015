@@ -41,7 +41,6 @@ namespace Solver
 				.Take(maxWidth);
 		    foreach (var result in childResults)
 		    {
-				
 				yield return new ExecutionResult
 				{
 					Commands = move.HasValue

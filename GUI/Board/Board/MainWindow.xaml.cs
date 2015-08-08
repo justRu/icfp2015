@@ -19,6 +19,7 @@ namespace Board
 		private readonly SerialSolver _solver;
 
 		private Unit _currentUnit;
+		private Snapshot _initialSnapshot;
 
 		public MainWindow()
 		{
@@ -26,9 +27,11 @@ namespace Board
 
 			_input = JsonConvert.DeserializeObject<Input>(File.ReadAllText("input.json"));
 
+			_initialSnapshot = new Snapshot(_input, _input.SourceSeeds.First());
+
 			_execution = new ExecutionRequest
 			{
-				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
+				Snapshot = _initialSnapshot,
 				Options = new ExecutionOptions
 				{
 					MaxWidth = 2,
@@ -46,24 +49,23 @@ namespace Board
 			commandBar.StartSolver += commandBarStartSolver;
 		}
 
-		private void commandBarStartSolver(object sender, EventArgs e)
+		private async void commandBarStartSolver(object sender, EventArgs e)
 		{
-			Task.Run(() =>
+			var results = await Task.Run(() => _solver.Solve(_execution).ToArray());
+			foreach (var result in results)
+			{
+				log.LogMessage("Result: " + result.Estimation);
+				log.LogMessage(result.Commands);
+				var snapshot = _initialSnapshot;
+				ShowSnapshot(snapshot);
+				await Task.Delay(1000);
+				foreach (var command in result.Commands)
 				{
-					var results = _solver.Solve(_execution).ToArray();
-					foreach (var result in results)
-					{
-						
-						
-						Dispatcher.Invoke(() => {
-							log.LogMessage(result.Commands);
-							ShowSnapshot(result.Snapshot);
-						});
-						Thread.Sleep(3000);
-					}
+					snapshot = snapshot.New(command);
+					ShowSnapshot(snapshot);
+					await Task.Delay(1000);
 				}
-				);
-			
+			}
 		}
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)
@@ -75,7 +77,7 @@ namespace Board
 
 		private void commandBarMove(object sender, MoveDirection e)
 		{
-			_currentUnit = Moving.Translate(_currentUnit, e);
+			_currentUnit = _currentUnit.Translate(e);
 			background.DrawUnit(_execution.Snapshot.Field, _currentUnit);
 		}
 

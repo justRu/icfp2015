@@ -31,5 +31,10 @@ namespace Board
 #warning Empty
 			log.AppendText((moves == null ? "empty" : string.Join(", ", moves)) + Environment.NewLine);
 		}
+
+		public void LogMessage(string formatStr, params object[] args)
+		{
+			log.AppendText(string.Format(formatStr, args) + Environment.NewLine);
+		}
 	}
 }
