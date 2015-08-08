@@ -33,7 +33,7 @@ namespace Board
 
 		public void LogMessage(MoveDirection[] moves)
 		{
-			log.AppendText((moves == null || moves.Length == 0 ? "empty" : string.Join(", ", moves)) + Environment.NewLine);
+			log.AppendText((moves == null || moves.Length == 0 ? "empty" : string.Join(Environment.NewLine, moves)) + Environment.NewLine);
 		}
 
 		public void LogMessage(string formatStr, params object[] args)

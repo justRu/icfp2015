@@ -4,7 +4,7 @@ namespace Solver
 	{
 		public MoveDirection[] Commands { get; set; }
 
-		public double Estimation { get; set; }
+		public double Estimate { get; set; }
 
 		public Snapshot Snapshot { get; set; }
 	}

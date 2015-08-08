@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Configuration;
 
 namespace Solver
 {
@@ -17,11 +18,17 @@ namespace Solver
 		}
 
 	    private static IEnumerable<ExecutionResult> Calculate(
-			Snapshot baseSnapshot, MoveDirection? move, int maxWidth, int depth, double minEstimate)
+			Snapshot baseSnapshot,
+			MoveDirection? move,
+			int maxWidth,
+			int depth,
+			double minEstimate)
 	    {
 			var snapshot = move.HasValue
 				? Game.MakeMove(baseSnapshot, move.Value)
 				: baseSnapshot;
+			if (snapshot == null) // illegal move
+				yield break;
             var estimate = SnapshotEvaluate(snapshot);
             // stop recursion
             if (snapshot.Finished || depth <= 0 || estimate < minEstimate) // TODO: some diff
@@ -29,17 +36,15 @@ namespace Solver
 			    yield return new ExecutionResult
 			    {
 				    Commands = new [] { move.Value },
-				    Estimation = estimate,
+				    Estimate = estimate,
 					Snapshot = snapshot
 			    };
 				yield break;
 		    }
-
-            // TODO: check for illegal moves (e.g. E-W)
             var candidateMoves = (MoveDirection[])Enum.GetValues(typeof (MoveDirection));
 			var childResults = candidateMoves
 				.SelectMany(m => Calculate(snapshot, m, maxWidth, depth - 1, estimate)) // recursion
-				.OrderByDescending(r => r.Estimation)
+				.OrderByDescending(r => r.Estimate)
 				.Take(maxWidth);
 		    foreach (var result in childResults)
 		    {
@@ -48,7 +53,7 @@ namespace Solver
 					Commands = move.HasValue
 						? result.Commands.Prepend(move.Value).ToArray()
 						: result.Commands,
-					Estimation = result.Estimation, // TODO: combine somehow?
+					Estimate = result.Estimate, // TODO: combine somehow?
 					Snapshot = result.Snapshot
 				};
 		    }

@@ -1,6 +1,8 @@
-﻿namespace Solver
+﻿using System;
+
+namespace Solver
 {
-	public struct Position
+	public struct Position : IEquatable<Position>
 	{
 		public int X;
 		public int Y;
@@ -9,6 +11,11 @@
 		{
 			X = x;
 			Y = y;
+		}
+
+		public bool Equals(Position other)
+		{
+			return X == other.X && Y == other.Y;
 		}
 	}
 }

@@ -14,17 +14,13 @@
         </StackPanel.Resources>
 		<Button Command="{Binding ClickCommand}" CommandParameter="spawn">Spawn</Button>
         <UniformGrid>
-            <Button Command="{Binding ClickCommand}" CommandParameter="West">Move W</Button>
-            <Button Command="{Binding ClickCommand}" CommandParameter="East">Move E</Button>
-            <Button Command="{Binding ClickCommand}" CommandParameter="SouthWest">Move SW</Button>
-            <Button Command="{Binding ClickCommand}" CommandParameter="SouthEast">Move SE</Button>
+            <Button Command="{Binding ClickCommand}" CommandParameter="West">West</Button>
+            <Button Command="{Binding ClickCommand}" CommandParameter="East">East</Button>
+            <Button Command="{Binding ClickCommand}" CommandParameter="SouthWest">South West</Button>
+            <Button Command="{Binding ClickCommand}" CommandParameter="SouthEast">South East</Button>
         </UniformGrid>
-        <Button Command="{Binding ClickCommand}" CommandParameter="RotateClockwise">Rotate clock</Button>
-        <Button Command="{Binding ClickCommand}" CommandParameter="RotateCounterClockwise">Rotate counter-clock</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="StartSolver" x:Name="btnSolverStart">Start Solver</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="NextSolverStep" x:Name="btnNextSolve" IsEnabled="False">Next solve</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="ShowInSnapshot" x:Name="btnShowIn" IsEnabled="False">Show in snapshot</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="ShowOutSnapshot" x:Name="btnShowOut" IsEnabled="False">Show out snapshot</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="NextMoveStep" x:Name="btnNextMove" IsEnabled="False">Next move</Button>
-	</StackPanel>
+        <Button Command="{Binding ClickCommand}" CommandParameter="RotateClockwise">CW</Button>
+        <Button Command="{Binding ClickCommand}" CommandParameter="RotateCounterClockwise">CCW</Button>
+        <Button Command="{Binding ClickCommand}" CommandParameter="StartSolver" x:Name="btnSolverStart">Solve</Button>
+    </StackPanel>
 </UserControl>
