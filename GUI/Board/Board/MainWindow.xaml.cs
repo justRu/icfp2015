@@ -52,6 +52,7 @@ namespace Board
 			var results = _solver.Solve(_execution);
 
 			Snapshot prevSnapshot = _execution.Snapshot;
+			Snapshot movingSnapshot = null;
 			ExecutionResult currentResultDisplay = null;
 			var enumerator = results.GetEnumerator();
 			IEnumerator<MoveDirection> moveEnumerator = null;
@@ -83,8 +84,9 @@ namespace Board
 					if (moveEnumerator.MoveNext())
 					{
 						log.LogMessage("  cmd: " + moveEnumerator.Current);
-						var movedSnapshot = Game.MakeMove(currentResultDisplay.Snapshot, moveEnumerator.Current);
-						ShowSnapshot(movedSnapshot);
+						movingSnapshot = Game.MakeMove(movingSnapshot, moveEnumerator.Current);
+						log.LogMessage(string.Format(" uid: {0}, fin: {1}, score: {2}", movingSnapshot.UnitIndex, movingSnapshot.Finished, movingSnapshot.Score));
+						ShowSnapshot(movingSnapshot);
 					}
 					else
 					{
@@ -96,6 +98,7 @@ namespace Board
 				{
 					if (currentResultDisplay != null)
 					{
+						movingSnapshot = prevSnapshot;
 						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
 					}
 					ShowSnapshot(prevSnapshot);
@@ -118,23 +121,23 @@ namespace Board
 		{
 			_currentUnit = Moving.Spawn(_input, _input.Units.First());
 
-			background.DrawUnit(_execution.Snapshot.Field, _currentUnit);
+			background.DrawUnit(_execution.Snapshot.Field, _currentUnit, null);
 		}
 
 		private void commandBarMove(object sender, MoveDirection e)
 		{
 			_currentUnit = Moving.Translate(_currentUnit, e);
-			background.DrawUnit(_execution.Snapshot.Field, _currentUnit);
+			background.DrawUnit(_execution.Snapshot.Field, _currentUnit, null);
 		}
 
 		private void Update()
 		{
-			background.DrawUnit(_execution.Snapshot.Field, _currentUnit);
+			background.DrawUnit(_execution.Snapshot.Field, _currentUnit, null);
 		}
 
 		private void ShowSnapshot(Snapshot snapshot)
 		{
-			background.DrawUnit(snapshot.Field, snapshot.CurrentUnit);
+			background.DrawUnit(snapshot.Field, snapshot.CurrentUnit, snapshot.UnitIndex);
 		}
 	}
 }

@@ -35,6 +35,10 @@ namespace Board
 			{
 #warning One-time debugger, yeah.
 				btnSolverStart.IsEnabled = false;
+				btnNextSolve.IsEnabled = true;
+				btnShowIn.IsEnabled = true;
+				btnShowOut.IsEnabled = true;
+				btnNextMove.IsEnabled = true;
 				StartSolver(this, null);
 				return;
 			}
