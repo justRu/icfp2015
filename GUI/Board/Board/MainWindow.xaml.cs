@@ -32,7 +32,7 @@ namespace Board
 				Options = new ExecutionOptions
 				{
 					MaxWidth = 2,
-					MaxHeight = 7,
+					MaxHeight = 3,
 					MinEstimation = double.MinValue
 				}
 			};
@@ -50,10 +50,15 @@ namespace Board
 		{
 			Task.Run(() =>
 				{
-					var results = _solver.Solve(_execution);
+					var results = _solver.Solve(_execution).ToArray();
 					foreach (var result in results)
 					{
-						Dispatcher.Invoke(() => ShowSnapshot(result.Snapshot));
+						
+						
+						Dispatcher.Invoke(() => {
+							log.LogMessage(result.Commands);
+							ShowSnapshot(result.Snapshot);
+						});
 						Thread.Sleep(3000);
 					}
 				}

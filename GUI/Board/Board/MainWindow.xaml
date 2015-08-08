@@ -9,6 +9,10 @@
 			<RowDefinition Height="Auto"></RowDefinition>
 			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"></ColumnDefinition>
+			<ColumnDefinition Width="100"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
 
 		<local:Background x:Name="background" />
 		<local:CommandBar Margin="3"  x:Name="commandBar" Grid.Row="1"></local:CommandBar>
@@ -31,5 +35,7 @@
             <Rectangle Fill="Black"></Rectangle>
             <TextBlock>Pivot</TextBlock>
         </StackPanel>
+		
+		<local:Log x:Name="log" Grid.Column="1"></local:Log>
 	</Grid>
 </Window>

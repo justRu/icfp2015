@@ -7,7 +7,5 @@ namespace Solver
 		public double Estimation { get; set; }
 
 		public Snapshot Snapshot { get; set; }
-
-		public Unit CurrentUnit { get; set; }
 	}
 }
