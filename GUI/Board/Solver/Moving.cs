@@ -9,13 +9,10 @@ namespace Solver
 			switch (direction)
 			{
 				case MoveDirection.SouthEast:
-					return Translate(unit, (unit.Pivot.Y % 2) == 0 ? 0 : 1, 1);
-				case MoveDirection.SouthWest:
-					return Translate(unit, (unit.Pivot.Y % 2) == 0 ? -1 : 0, 1);
 				case MoveDirection.East:
-					return Translate(unit, 1, 0);
+				case MoveDirection.SouthWest:
 				case MoveDirection.West:
-					return Translate(unit, -1, 0);
+					return TranslateUnit(unit, direction);
 				case MoveDirection.RotateClockwise:
 					return Rotate(unit, true);
 				case MoveDirection.RotateCounterClockwise:
@@ -48,7 +45,34 @@ namespace Solver
 			return dx == 0 ? unit : Translate(unit, dx, 0);
 		}
 
-        public static Unit Translate(this Unit unit, int dx, int dy)
+		private static Position Translate(Position p, MoveDirection direction)
+		{
+			switch (direction)
+			{
+				case MoveDirection.East:
+					return new Position(p.X + 1, p.Y);
+				case MoveDirection.West:
+					return new Position(p.X - 1, p.Y);
+				case MoveDirection.SouthEast:
+					return new Position(p.X + (p.Y % 2 == 0 ? 0 : 1), p.Y + 1);
+				case MoveDirection.SouthWest:
+					return new Position(p.X + (p.Y % 2 == 0 ? -1 : 0), p.Y + 1);
+				default:
+					return p;
+
+			}
+		}
+
+        private static Unit TranslateUnit(this Unit unit, MoveDirection dir)
+		{
+			return new Unit
+			{
+				Pivot = Translate(unit.Pivot, dir),
+				Members = unit.Members.Select(member => Translate(member, dir)).ToArray()
+			};
+		}
+
+		private static Unit Translate(this Unit unit, int dx, int dy)
 		{
 			var pivot = new Position
 			{
