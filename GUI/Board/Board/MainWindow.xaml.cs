@@ -37,8 +37,8 @@ namespace Board
 				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
 				Options = new ExecutionOptions
 				{
-					MaxWidth = 1,
-					MaxHeight = 10
+					MaxWidth = 2,
+					MaxHeight = 5
 				}
 			};
 			var response = new SerialSolver().Solve(req);
