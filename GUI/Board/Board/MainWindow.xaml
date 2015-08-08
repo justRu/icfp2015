@@ -11,6 +11,7 @@
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
 			<ColumnDefinition Width="100"></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 
@@ -36,6 +37,7 @@
             <TextBlock>Pivot</TextBlock>
         </StackPanel>
 		
-		<local:Log x:Name="log" Grid.Column="1"></local:Log>
+		<GridSplitter Grid.Column="1" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="5"></GridSplitter>
+		<local:Log x:Name="log"  Grid.RowSpan="3" Grid.Column="2"></local:Log>
 	</Grid>
 </Window>

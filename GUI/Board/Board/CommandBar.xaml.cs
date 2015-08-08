@@ -13,6 +13,10 @@ namespace Board
 		public event EventHandler SpawnEvent;
 		public event EventHandler<MoveDirection> Move;
 		public event EventHandler StartSolver;
+		public event EventHandler NextSolverStep;
+		public event EventHandler NextMoveStep;
+		public event EventHandler ShowInSnapshot;
+		public event EventHandler ShowOutSnapshot;
 
 		public CommandBar()
 		{
@@ -29,7 +33,29 @@ namespace Board
 			}
 			if (cmd == "StartSolver")
 			{
+#warning One-time debugger, yeah.
+				btnSolverStart.IsEnabled = false;
 				StartSolver(this, null);
+				return;
+			}
+			if (cmd =="NextSolverStep")
+			{
+				NextSolverStep(this, null);
+				return;
+			}
+			if (cmd == "NextMoveStep")
+			{
+				NextMoveStep(this, null);
+				return;
+			}
+			if (cmd == "ShowInSnapshot")
+			{
+				ShowInSnapshot(this, null);
+				return;
+			}
+			if (cmd == "ShowOutSnapshot")
+			{
+				ShowOutSnapshot(this, null);
 				return;
 			}
 			MoveDirection move;

@@ -26,10 +26,14 @@ namespace Board
 			InitializeComponent();
 		}
 
+		public void LogMessage(string message)
+		{
+			log.AppendText(message + Environment.NewLine);
+		}
+
 		public void LogMessage(MoveDirection[] moves)
 		{
-#warning Empty
-			log.AppendText((moves == null ? "empty" : string.Join(", ", moves)) + Environment.NewLine);
+			log.AppendText((moves == null || moves.Length == 0 ? "empty" : string.Join(", ", moves)) + Environment.NewLine);
 		}
 
 		public void LogMessage(string formatStr, params object[] args)

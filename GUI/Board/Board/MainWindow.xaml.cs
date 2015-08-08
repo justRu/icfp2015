@@ -6,6 +6,7 @@ using System.Windows;
 using Solver;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Board
 {
@@ -19,7 +20,6 @@ namespace Board
 		private readonly SerialSolver _solver;
 
 		private Unit _currentUnit;
-		private Snapshot _initialSnapshot;
 
 		public MainWindow()
 		{
@@ -27,15 +27,13 @@ namespace Board
 
 			_input = JsonConvert.DeserializeObject<Input>(File.ReadAllText("input.json"));
 
-			_initialSnapshot = new Snapshot(_input, _input.SourceSeeds.First());
-
 			_execution = new ExecutionRequest
 			{
-				Snapshot = _initialSnapshot,
+				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
 				Options = new ExecutionOptions
 				{
 					MaxWidth = 2,
-					MaxHeight = 10,
+					MaxHeight = 3,
 					MinEstimation = double.MinValue
 				}
 			};
@@ -49,23 +47,71 @@ namespace Board
 			commandBar.StartSolver += commandBarStartSolver;
 		}
 
-		private async void commandBarStartSolver(object sender, EventArgs e)
+		private void commandBarStartSolver(object sender, EventArgs e)
 		{
-			var results = await Task.Run(() => _solver.Solve(_execution).ToArray());
-			foreach (var result in results)
-			{
-				log.LogMessage("Result: " + result.Estimation);
-				log.LogMessage(result.Commands);
-				var snapshot = _initialSnapshot;
-				ShowSnapshot(snapshot);
-				await Task.Delay(1000);
-				foreach (var command in result.Commands)
+			var results = _solver.Solve(_execution);
+
+			Snapshot prevSnapshot = _execution.Snapshot;
+			ExecutionResult currentResultDisplay = null;
+			var enumerator = results.GetEnumerator();
+			IEnumerator<MoveDirection> moveEnumerator = null;
+			commandBar.NextSolverStep += (s, ee) =>
 				{
-					snapshot = Game.MakeMove(snapshot, command);
-					ShowSnapshot(snapshot);
-					await Task.Delay(250);
-				}
-			}
+					if (enumerator.MoveNext())
+					{
+						if (currentResultDisplay != null)
+						{
+							prevSnapshot = currentResultDisplay.Snapshot;
+						}
+						currentResultDisplay = enumerator.Current;
+						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
+						log.LogMessage("Got commands:");
+						log.LogMessage(currentResultDisplay.Commands);
+						
+						//ShowSnapshot(currentResultDisplay.Snapshot);
+					}
+				};
+
+			commandBar.NextMoveStep += (s, ee) =>
+				{
+					if (moveEnumerator == null)
+					{
+						log.LogMessage("missing cmds");
+						return;
+					}
+
+					if (moveEnumerator.MoveNext())
+					{
+						log.LogMessage("  cmd: " + moveEnumerator.Current);
+						var movedSnapshot = Game.MakeMove(currentResultDisplay.Snapshot, moveEnumerator.Current);
+						ShowSnapshot(movedSnapshot);
+					}
+					else
+					{
+						log.LogMessage(" no more cmds");
+					}
+				};
+
+			commandBar.ShowInSnapshot += (s, ee) =>
+				{
+					if (currentResultDisplay != null)
+					{
+						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
+					}
+					ShowSnapshot(prevSnapshot);
+				};
+
+			commandBar.ShowOutSnapshot += (s, ee) =>
+				{
+					if (currentResultDisplay != null)
+					{
+						ShowSnapshot(currentResultDisplay.Snapshot);
+					}
+					else
+					{
+						log.LogMessage(" missing out snapshot");
+					}
+				};
 		}
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)
@@ -77,7 +123,7 @@ namespace Board
 
 		private void commandBarMove(object sender, MoveDirection e)
 		{
-			_currentUnit = _currentUnit.Translate(e);
+			_currentUnit = Moving.Translate(_currentUnit, e);
 			background.DrawUnit(_execution.Snapshot.Field, _currentUnit);
 		}
 
