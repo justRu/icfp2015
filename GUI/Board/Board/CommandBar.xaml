@@ -22,9 +22,9 @@
         <Button Command="{Binding ClickCommand}" CommandParameter="RotateClockwise">Rotate clock</Button>
         <Button Command="{Binding ClickCommand}" CommandParameter="RotateCounterClockwise">Rotate counter-clock</Button>
 		<Button Command="{Binding ClickCommand}" CommandParameter="StartSolver" x:Name="btnSolverStart">Start Solver</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="NextSolverStep">Next solve</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="ShowInSnapshot">Show in snapshot</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="ShowOutSnapshot">Show out snapshot</Button>
-		<Button Command="{Binding ClickCommand}" CommandParameter="NextMoveStep">Next move</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="NextSolverStep" x:Name="btnNextSolve" IsEnabled="False">Next solve</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="ShowInSnapshot" x:Name="btnShowIn" IsEnabled="False">Show in snapshot</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="ShowOutSnapshot" x:Name="btnShowOut" IsEnabled="False">Show out snapshot</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="NextMoveStep" x:Name="btnNextMove" IsEnabled="False">Next move</Button>
 	</StackPanel>
 </UserControl>

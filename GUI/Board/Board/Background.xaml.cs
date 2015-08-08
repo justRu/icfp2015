@@ -27,7 +27,7 @@ namespace Board
 			InitializeComponent();
 		}
 
-		public void DrawUnit(Field field, Unit unit)
+		public void DrawUnit(Field field, Unit unit, int? unitIndex)
 		{
 			var nodeWidth = GetNodeWidth(field.Width);
 			var nodeHeight = GetNodeHeight(field.Height);
@@ -40,9 +40,9 @@ namespace Board
 				// Render unit
 				foreach (var memberPos in unit.Members)
 				{
-					DrawMember(memberPos, nodeWidth, nodeHeight, 16, color);
+					DrawMember(memberPos, nodeWidth, nodeHeight, 16, color, null);
 				}
-				DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
+				DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black, unitIndex.HasValue ? unitIndex.Value.ToString() : null);
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace Board
 			host.Children.Add(poly);
 		}
 
-		private void DrawMember(Position pos, double nodeW, double nodeH, double padding, Color color)
+		private void DrawMember(Position pos, double nodeW, double nodeH, double padding, Color color, string title)
 		{
 			var poly = new Polygon();
 
@@ -120,6 +120,16 @@ namespace Board
 
 			Canvas.SetLeft(poly, xs);
 			Canvas.SetTop(poly, ys);
+
+
+			if (title != null)
+			{
+				var titleBlock = new TextBlock();
+				titleBlock.Text = title;
+				Canvas.SetLeft(titleBlock, xs);
+				Canvas.SetTop(titleBlock, ys);
+				host.Children.Add(titleBlock);
+			}
 
 			host.Children.Add(poly);
 		}
