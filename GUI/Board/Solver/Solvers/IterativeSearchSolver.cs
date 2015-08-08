@@ -37,7 +37,7 @@ namespace Solver
 				{
 					Snapshot = best.Snapshot,
 					Commands = moves.ToArray(),
-					Estimation = best.Estimation
+					Estimate = best.Estimate
 				}
 			};
 		}

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,16 +5,20 @@ namespace Solver
 {
     public static class Game
     {
-        public static Snapshot MakeMove(Snapshot prevSnapshot, MoveDirection move)
+		/// <returns>null if move is illegal, otherwise snapshot with new game state</returns>
+		public static Snapshot MakeMove(Snapshot prevSnapshot, MoveDirection move)
         {
             var snapshot = new Snapshot(prevSnapshot); // clone
             var unit = snapshot.CurrentUnit.Translate(move);
+			if (snapshot.UnitHistory.Any(u => unit.Equals(u)))
+				return null;
             if (Collisions.GetCollision(snapshot.Field, unit) != CollisionType.None)
             {
                 LockUnit(snapshot, snapshot.CurrentUnit);
             }
             else
             {
+				snapshot.UnitHistory.Add(snapshot.CurrentUnit);
                 snapshot.CurrentUnit = unit;
             }
             return snapshot;
@@ -27,7 +30,7 @@ namespace Solver
             {
                 snapshot.Field[pos.X, pos.Y] = true; // lock position
             }
-            DeleteLines(snapshot, unit);
+			snapshot = DeleteLines(snapshot, unit);
             snapshot.UnitIndex++;
             if (snapshot.UnitIndex >= snapshot.UnitsQueue.MaxUnits)
             {
@@ -43,6 +46,7 @@ namespace Solver
                 else
                 {
                     snapshot.CurrentUnit = nextUnit;
+					snapshot.UnitHistory.Clear();
                 }
             }
         }

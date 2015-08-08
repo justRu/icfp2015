@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Solver
 {
 	public sealed class Snapshot
@@ -14,6 +16,8 @@ namespace Solver
 
 		public int UnitIndex { get; set; }
 
+		public List<Unit> UnitHistory { get; set; }
+
 		/// <summary>
 		/// Initial constructor.
 		/// </summary>
@@ -22,6 +26,7 @@ namespace Solver
 			Field = new Field(input);
 			UnitsQueue = new UnitsQueue(input.Units, seed, input.SourceLength);
 			CurrentUnit = Field.Spawn(UnitsQueue.Get(0));
+			UnitHistory = new List<Unit>();
 			Score = 0;
 		}
 
@@ -37,6 +42,7 @@ namespace Solver
 			UnitIndex = other.UnitIndex;
 			// TODO: move index from queue to this class
 			UnitsQueue = other.UnitsQueue;
+			UnitHistory = new List<Unit>(other.UnitHistory);
 		}
 	}
 }

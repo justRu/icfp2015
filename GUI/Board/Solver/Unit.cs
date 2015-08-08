@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 
 namespace Solver
 {
-	public struct Unit
+	public struct Unit : IEquatable<Unit>
 	{
 		public Position[] Members;
 
@@ -68,6 +70,13 @@ namespace Solver
 		public int GetHeight()
 		{
 			return GetMaxY() - GetMinY();
+		}
+
+		public bool Equals(Unit other)
+		{
+			if (!Pivot.Equals(other.Pivot))
+				return false;
+			return Members.SequenceEqual(other.Members);
 		}
 	}
 }
