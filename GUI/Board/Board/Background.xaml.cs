@@ -59,7 +59,8 @@ namespace Board
 			{
 				for (var leftIdx = 0; leftIdx < field.Width; leftIdx++)
 				{
-					DrawHex((leftIdx * nodeWidth) + (padded ? nodeWidth / 2 : 0), topIdx * nodeHeight, nodeWidth, nodeHeight, 4,
+					DrawHex(leftIdx, topIdx, nodeWidth, nodeHeight, 4,
+						padded,
 						filledHash.Contains(new Position { X = leftIdx, Y = topIdx}) ? Colors.Blue : Colors.LightBlue);
 				}
 				padded = !padded;
@@ -82,8 +83,11 @@ namespace Board
 			}
 		}*/
 
-		private void DrawHex(double xs, double ys, double w, double h, double p, Color color)
+		private void DrawHex(int leftIdx, int topIdx, double w, double h, double p, bool padded, Color color)
 		{
+			var xs = (leftIdx * w) + (padded ? w / 2 : 0);
+			var ys = topIdx * h;
+
 			var poly = new Polygon();
 			
 			poly.Points.Add(new Point(w / 2, p));
@@ -99,6 +103,8 @@ namespace Board
 			
 			Canvas.SetLeft(poly, xs);
 			Canvas.SetTop(poly, ys);
+
+			poly.ToolTip = string.Format("X: {0}, Y: {1}", leftIdx, topIdx);
 
 			host.Children.Add(poly);
 		}
