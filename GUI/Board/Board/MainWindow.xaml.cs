@@ -38,7 +38,8 @@ namespace Board
 				Options = new ExecutionOptions
 				{
 					MaxWidth = 2,
-					MaxHeight = 5
+					MaxHeight = 7,
+                    MinEstimation = double.MinValue
 				}
 			};
 			var response = new SerialSolver().Solve(req);
