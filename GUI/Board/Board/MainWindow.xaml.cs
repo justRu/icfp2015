@@ -35,7 +35,7 @@ namespace Board
 				Options = new ExecutionOptions
 				{
 					MaxWidth = 2,
-					MaxHeight = 3,
+					MaxHeight = 10,
 					MinEstimation = double.MinValue
 				}
 			};
@@ -61,9 +61,9 @@ namespace Board
 				await Task.Delay(1000);
 				foreach (var command in result.Commands)
 				{
-					snapshot = snapshot.New(command);
+					snapshot = Game.MakeMove(snapshot, command);
 					ShowSnapshot(snapshot);
-					await Task.Delay(1000);
+					await Task.Delay(250);
 				}
 			}
 		}

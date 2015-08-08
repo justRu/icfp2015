@@ -14,17 +14,9 @@ namespace Solver
 
 		public int UnitIndex { get; set; }
 
-		private Snapshot(Snapshot other)
-		{
-			CurrentUnit = other.CurrentUnit;
-			Field = new Field(other.Field);
-			Finished = other.Finished;
-			Score = other.Score;
-			UnitIndex = other.UnitIndex;
-			// TODO: move index from queue to this class
-			UnitsQueue = other.UnitsQueue;
-		}
-
+		/// <summary>
+		/// Initial constructor.
+		/// </summary>
 		public Snapshot(Input input, uint seed)
 		{
 			Field = new Field(input);
@@ -33,45 +25,18 @@ namespace Solver
 			Score = 0;
 		}
 
-		public Snapshot New(MoveDirection move)
+		/// <summary>
+		/// Copy constructor.
+		/// </summary>
+		internal Snapshot(Snapshot other)
 		{
-			var snapshot = new Snapshot(this); // clone
-			var unit = CurrentUnit.Translate(move);
-			if (Collisions.GetCollision(Field, unit) != CollisionType.None)
-			{
-				LockUnit(snapshot, CurrentUnit);
-			}
-			else
-			{
-				snapshot.CurrentUnit = unit;
-			}
-			return snapshot;
-		}
-
-		private void LockUnit(Snapshot snapshot, Unit unit)
-		{
-			foreach (var pos in unit.Members)
-			{
-				snapshot.Field[pos.X, pos.Y] = true; // lock position
-			}
-			// TODO: clear row, update cleared rows count, move rows down!
-			snapshot.UnitIndex++;
-			if (snapshot.UnitIndex >= snapshot.UnitsQueue.MaxUnits)
-			{
-				snapshot.Finished = true;
-			}
-			else
-			{
-				var nextUnit = Field.Spawn(UnitsQueue.Get(snapshot.UnitIndex));
-				if (Collisions.GetCollision(Field, nextUnit) != CollisionType.None)
-				{
-					snapshot.Finished = true;
-				}
-				else
-				{
-					snapshot.CurrentUnit = nextUnit;
-				}
-			}
+			CurrentUnit = other.CurrentUnit;
+			Field = new Field(other.Field);
+			Finished = other.Finished;
+			Score = other.Score;
+			UnitIndex = other.UnitIndex;
+			// TODO: move index from queue to this class
+			UnitsQueue = other.UnitsQueue;
 		}
 	}
 }
