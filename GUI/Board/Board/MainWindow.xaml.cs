@@ -83,7 +83,7 @@ namespace Board
 					if (moveEnumerator.MoveNext())
 					{
 						log.LogMessage("  cmd: " + moveEnumerator.Current);
-						var movedSnapshot = currentResultDisplay.Snapshot.New(moveEnumerator.Current);
+						var movedSnapshot = Game.MakeMove(currentResultDisplay.Snapshot, moveEnumerator.Current);
 						ShowSnapshot(movedSnapshot);
 					}
 					else
