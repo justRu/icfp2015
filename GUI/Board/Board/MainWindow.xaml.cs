@@ -6,6 +6,7 @@ using System.Windows;
 using Solver;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Board
 {
@@ -48,22 +49,69 @@ namespace Board
 
 		private void commandBarStartSolver(object sender, EventArgs e)
 		{
-			Task.Run(() =>
+			var results = _solver.Solve(_execution);
+
+			Snapshot prevSnapshot = _execution.Snapshot;
+			ExecutionResult currentResultDisplay = null;
+			var enumerator = results.GetEnumerator();
+			IEnumerator<MoveDirection> moveEnumerator = null;
+			commandBar.NextSolverStep += (s, ee) =>
 				{
-					var results = _solver.Solve(_execution).ToArray();
-					foreach (var result in results)
+					if (enumerator.MoveNext())
 					{
+						if (currentResultDisplay != null)
+						{
+							prevSnapshot = currentResultDisplay.Snapshot;
+						}
+						currentResultDisplay = enumerator.Current;
+						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
+						log.LogMessage("Got commands:");
+						log.LogMessage(currentResultDisplay.Commands);
 						
-						
-						Dispatcher.Invoke(() => {
-							log.LogMessage(result.Commands);
-							ShowSnapshot(result.Snapshot);
-						});
-						Thread.Sleep(3000);
+						//ShowSnapshot(currentResultDisplay.Snapshot);
 					}
-				}
-				);
-			
+				};
+
+			commandBar.NextMoveStep += (s, ee) =>
+				{
+					if (moveEnumerator == null)
+					{
+						log.LogMessage("missing cmds");
+						return;
+					}
+
+					if (moveEnumerator.MoveNext())
+					{
+						log.LogMessage("  cmd: " + moveEnumerator.Current);
+						var movedSnapshot = currentResultDisplay.Snapshot.New(moveEnumerator.Current);
+						ShowSnapshot(movedSnapshot);
+					}
+					else
+					{
+						log.LogMessage(" no more cmds");
+					}
+				};
+
+			commandBar.ShowInSnapshot += (s, ee) =>
+				{
+					if (currentResultDisplay != null)
+					{
+						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
+					}
+					ShowSnapshot(prevSnapshot);
+				};
+
+			commandBar.ShowOutSnapshot += (s, ee) =>
+				{
+					if (currentResultDisplay != null)
+					{
+						ShowSnapshot(currentResultDisplay.Snapshot);
+					}
+					else
+					{
+						log.LogMessage(" missing out snapshot");
+					}
+				};
 		}
 
 		private void commandBarSpawnEvent(object sender, EventArgs e)
