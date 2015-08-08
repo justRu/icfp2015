@@ -6,16 +6,15 @@ namespace Solver
 {
 	public class SerialSolver : ISolver
     {
-	    public ExecutionResult[] Solve(ExecutionRequest request)
-	    {
-		    return Calculate(
-                request.Snapshot,
-                null,
-                request.Options.MaxWidth,
-                request.Options.MaxHeight,
-                request.Options.MinEstimation)
-                .ToArray();
-	    }
+		public IEnumerable<ExecutionResult> Solve(ExecutionRequest request)
+		{
+			return Calculate(
+				request.Snapshot,
+				null,
+				request.Options.MaxWidth,
+				request.Options.MaxHeight,
+				request.Options.MinEstimation);
+		}
 
 	    private static IEnumerable<ExecutionResult> Calculate(
 			Snapshot baseSnapshot, MoveDirection? move, int maxWidth, int depth, double minEstimate)
@@ -28,7 +27,8 @@ namespace Solver
 			    yield return new ExecutionResult
 			    {
 				    Commands = new MoveDirection[0],
-				    Estimation = estimate
+				    Estimation = estimate,
+					Snapshot = snapshot
 			    };
 				yield break;
 		    }
@@ -48,6 +48,7 @@ namespace Solver
 						? result.Commands.Prepend(move.Value).ToArray()
 						: result.Commands,
 					Estimation = result.Estimation, // TODO: combine somehow?
+					Snapshot = result.Snapshot
 				};
 		    }
 	    }

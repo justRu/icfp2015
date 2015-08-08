@@ -27,22 +27,37 @@ namespace Board
 			InitializeComponent();
 		}
 
-		public void Draw(Input input)
+		public void DrawUnit(Field field, Unit unit)
+		{
+			var nodeWidth = GetNodeWidth(field.Width);
+			var nodeHeight = GetNodeHeight(field.Height);
+			Draw(field, nodeWidth, nodeHeight);
+
+			if (unit.Members != null)
+			{
+				var color = HasCollision(field, unit) ? Colors.Red : Colors.Green;
+
+				// Render unit
+				foreach (var memberPos in unit.Members)
+				{
+					DrawMember(memberPos, nodeWidth, nodeHeight, 16, color);
+				}
+				DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
+			}
+		}
+
+		private void Draw(Field field, double nodeWidth, double nodeHeight)
 		{
 			host.Children.Clear();
-			
-			var nodeWidth = GetNodeWidth(input.Width);
-			var nodeHeight = GetNodeHeight(input.Height);
 
 			var padded = false;
 
-			var filledHash = new HashSet<Position>(input.Filled);
-			
+			var filledHash = GetFilledCells(field);
 
 			// Render hexs
-			for (var topIdx = 0; topIdx < input.Height; topIdx++)
+			for (var topIdx = 0; topIdx < field.Height; topIdx++)
 			{
-				for (var leftIdx = 0; leftIdx < input.Width; leftIdx++)
+				for (var leftIdx = 0; leftIdx < field.Width; leftIdx++)
 				{
 					DrawHex((leftIdx * nodeWidth) + (padded ? nodeWidth / 2 : 0), topIdx * nodeHeight, nodeWidth, nodeHeight, 4,
 						filledHash.Contains(new Position { X = leftIdx, Y = topIdx}) ? Colors.Blue : Colors.LightBlue);
@@ -51,7 +66,7 @@ namespace Board
 			}
 		}
 
-		public void DrawUnits(Input input)
+		/*public void DrawUnits(Input input)
 		{
 			var nodeWidth = GetNodeWidth(input.Width);
 			var nodeHeight = GetNodeHeight(input.Height);
@@ -65,24 +80,7 @@ namespace Board
 				}
 				DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
 			}
-		}
-
-		public void DrawUnit(Input input, Unit unit)
-		{
-			Draw(input);
-
-			var nodeWidth = GetNodeWidth(input.Width);
-			var nodeHeight = GetNodeHeight(input.Height);
-
-			//var color = Collisions.GetCollision(input, unit) == CollisionType.None ? Colors.Green : Colors.Red;
-
-			// Render unit
-			foreach (var memberPos in unit.Members)
-			{
-				DrawMember(memberPos, nodeWidth, nodeHeight, 16, Colors.Green);
-			}
-			DrawMember(unit.Pivot, nodeWidth, nodeHeight, 24, Colors.Black);
-		}
+		}*/
 
 		private void DrawHex(double xs, double ys, double w, double h, double p, Color color)
 		{
@@ -142,6 +140,39 @@ namespace Board
 		{
 			var key = string.Join("_", unit.Members.Concat(new [] {unit.Pivot}).Select(m => string.Format("{0}.{1}", m.X, m.Y)));
 			return ColorGenerator.GetColor(key);
+		}
+
+		private static HashSet<Position> GetFilledCells(Field field)
+		{
+			var result = new HashSet<Position>();
+			for (var x = 0; x < field.Width; x++)
+			{
+				for (var y = 0; y < field.Height; y++)
+				{
+					if (field[x, y])
+					{
+						result.Add(new Position(x, y));
+					}
+				}
+			}
+			return result;
+		}
+
+		private static bool HasCollision(Field field, Unit unit)
+		{
+			var filled = GetFilledCells(field);
+			foreach (var member in unit.Members)
+			{
+				if (member.X < 0 || member.Y < 0 || member.X >= field.Width || member.Y >= field.Height)
+				{
+					return true;
+				}
+				if (filled.Contains(member))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

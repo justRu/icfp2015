@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 namespace Solver
 {
 	public interface ISolver
 	{
-		ExecutionResult[] Solve(ExecutionRequest request);
+		IEnumerable<ExecutionResult> Solve(ExecutionRequest request);
 	}
 }

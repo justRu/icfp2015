@@ -12,6 +12,7 @@ namespace Board
 	{
 		public event EventHandler SpawnEvent;
 		public event EventHandler<MoveDirection> Move;
+		public event EventHandler StartSolver;
 
 		public CommandBar()
 		{
@@ -24,6 +25,11 @@ namespace Board
 			if (cmd == "spawn")
 			{
 				SpawnEvent(this, null);
+				return;
+			}
+			if (cmd == "StartSolver")
+			{
+				StartSolver(this, null);
 				return;
 			}
 			MoveDirection move;

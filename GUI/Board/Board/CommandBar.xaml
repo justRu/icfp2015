@@ -21,5 +21,6 @@
         </UniformGrid>
         <Button Command="{Binding ClickCommand}" CommandParameter="RotateClockwise">Rotate clock</Button>
         <Button Command="{Binding ClickCommand}" CommandParameter="RotateCounterClockwise">Rotate counter-clock</Button>
+		<Button Command="{Binding ClickCommand}" CommandParameter="StartSolver">Start Solver</Button>
 	</StackPanel>
 </UserControl>
