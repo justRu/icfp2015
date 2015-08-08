@@ -17,7 +17,7 @@ namespace Board
 	{
 		private readonly Input _input;
 		private readonly ExecutionRequest _execution;
-		private readonly SerialSolver _solver;
+		private readonly ISolver _solver;
 
 		private Unit _currentUnit;
 
@@ -33,12 +33,12 @@ namespace Board
 				Options = new ExecutionOptions
 				{
 					MaxWidth = 2,
-					MaxHeight = 3,
+					MaxHeight = 7,
 					MinEstimation = double.MinValue
 				}
 			};
 
-			_solver = new SerialSolver();
+			_solver = new IterativeSearchSolver(5); //new TraverseSolver();
 
 			SizeChanged += (s, e) => Update();
 
@@ -67,7 +67,7 @@ namespace Board
 						moveEnumerator = currentResultDisplay.Commands.Cast<MoveDirection>().GetEnumerator();
 						log.LogMessage("Got commands:");
 						log.LogMessage(currentResultDisplay.Commands);
-						
+
 						//ShowSnapshot(currentResultDisplay.Snapshot);
 					}
 				};

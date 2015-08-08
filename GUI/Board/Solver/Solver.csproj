@@ -43,7 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
-    <Compile Include="SerialSolver.cs" />
+    <Compile Include="Solvers\IterativeSearchSolver.cs" />
+    <Compile Include="Solvers\SearchSolver.cs" />
     <Compile Include="Collisions.cs" />
     <Compile Include="CollisionType.cs" />
     <Compile Include="Moving.cs" />
@@ -53,7 +54,7 @@
     <Compile Include="ExecutionResult.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Input.cs" />
-    <Compile Include="ISolver.cs" />
+    <Compile Include="Solvers\ISolver.cs" />
     <Compile Include="Lcg.cs" />
     <Compile Include="MoveDirection.cs" />
     <Compile Include="Position.cs" />
