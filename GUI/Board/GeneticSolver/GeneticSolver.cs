@@ -7,29 +7,18 @@ using Solver;
 
 namespace GeneticSolver
 {
-	class Result
-	{
-		public ExecutionOptions Options { get; set; }
-
-		public double Score { get; set; }
-
-		public MoveDirection[] Commands { get; set; }
-
-		public int UnitIndex { get; set; }
-	}
-
 	internal static class GeneticSolver
 	{
 		public static readonly Random Random = new Random();
 
-		public static void Run(Snapshot snapshot)
+		public static Result Run(Snapshot snapshot)
 		{
-			int iterations = 10;
+			int iterations = 3;
 			int populationSize = 12;
 			int bestSize = 6;
 			double mutationPercent = 0.3;
 
-			var globalBest = new Result[0];
+			Result globalBest = null;
 			// Initialize population:
 			var population = Enumerable.Range(0, populationSize)
 				.Select(_ => Generate())
@@ -62,10 +51,10 @@ namespace GeneticSolver
 					.OrderByDescending(r => r.Score).Take(bestSize)
 					.ToArray();
 
-				globalBest = globalBest.Concat(bestResults)
-					.OrderByDescending(r => r.Score)
-					.Take(bestSize)
-					.ToArray();
+				if (globalBest == null || globalBest.Score < bestResults.First().Score)
+				{
+					globalBest = bestResults.First();
+				}
 				
 				population = new List<ExecutionOptions>(bestResults.Select(r => r.Options));
 			
@@ -87,13 +76,7 @@ namespace GeneticSolver
 					Mutate(options, mutationPercent);
 				}
 			}
-			Console.WriteLine("Global options: ");
-			foreach (var result in globalBest)
-			{
-				Console.WriteLine("Score: " + result.Score);
-				Console.WriteLine(JsonConvert.SerializeObject(result.Options));
-				Console.WriteLine(string.Join(", ", result.Commands));
-			}
+			return globalBest;
 		}
 
 		private static void PrintResult(int pos, Result result)

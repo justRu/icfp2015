@@ -89,7 +89,6 @@
     <Compile Include="CommandBar.xaml.cs">
       <DependentUpon>CommandBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\CommandEncoding.cs" />
     <Compile Include="Helpers\ColorGenerator.cs" />
     <Compile Include="Log.xaml.cs">
       <DependentUpon>Log.xaml</DependentUpon>

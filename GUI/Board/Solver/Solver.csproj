@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandEncoding.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Solvers\IterativeSearchSolver.cs" />
     <Compile Include="Solvers\SearchSolver.cs" />
