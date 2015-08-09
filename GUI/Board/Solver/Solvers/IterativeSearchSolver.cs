@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Solver
@@ -30,6 +31,7 @@ namespace Solver
 					Snapshot = best.Snapshot,
 					Options = request.Options
 				};
+				request.Options.MinEstimation = double.MinValue;
 			}
 			return new[]
 			{

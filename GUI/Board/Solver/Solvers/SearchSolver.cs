@@ -13,15 +13,15 @@ namespace Solver
 			return Calculate(
 				request.Snapshot,
 				null,
-				request.Options.MaxWidth,
-				request.Options.MaxHeight,
+				request.Options,
+				(int)Math.Ceiling(request.Options.MaxHeight),
 				request.Options.MinEstimation);
 		}
 
 	    private static IEnumerable<ExecutionResult> Calculate(
 			Snapshot baseSnapshot,
 			MoveDirection? move,
-			int maxWidth,
+			ExecutionOptions options,
 			int depth,
 			double minEstimate)
 	    {
@@ -30,7 +30,7 @@ namespace Solver
 				: baseSnapshot;
 			if (snapshot == null) // illegal move
 				yield break;
-            var estimate = SnapshotEvaluate(snapshot);
+			var estimate = SnapshotEvaluate(snapshot, options);
             
 			bool nextUnit = snapshot.UnitIndex > baseSnapshot.UnitIndex;
 			// stop recursion
@@ -47,23 +47,10 @@ namespace Solver
 
             var candidateMoves = (MoveDirection[])Enum.GetValues(typeof (MoveDirection));
 
-		    IEnumerable<ExecutionResult> childResults;
-			//if (depth >= 8)
-			//{
-			//	var tasks = candidateMoves
-			//		.Select(m => Task.Run(() => Calculate(snapshot, m, maxWidth, depth - 1, estimate)))
-			//		.ToArray();
-
-			//	Task.WaitAll(tasks);
-			//	childResults = tasks.SelectMany(t => t.Result);
-
-			//}
-			//else
-		    {
-				childResults = candidateMoves
-					.SelectMany(m => Calculate(snapshot, m, maxWidth, depth - 1, estimate)); // recursion;
-		    }
-			childResults = childResults.OrderByDescending(r => r.Estimate).Take(maxWidth);
+		    var childResults = candidateMoves
+			    .SelectMany(m => Calculate(snapshot, m, options, depth - 1, estimate))
+				.OrderByDescending(r => r.Estimate)
+				.Take((int)Math.Ceiling(options.MaxWidth));
 		    foreach (var result in childResults)
 		    {
 				yield return new ExecutionResult
@@ -77,13 +64,15 @@ namespace Solver
 		    }
 	    }
 
-	    private static double SnapshotEvaluate(Snapshot snapshot, params MoveDirection[] nextMoves)
+	    private static double SnapshotEvaluate(Snapshot snapshot, ExecutionOptions options)
 	    {
-			return snapshot.Score - GetHiddenHoles(snapshot.Field) * 20
-				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit);
+			return snapshot.Score
+				+ GetFieldEstimate(snapshot.Field, options)
+				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit, options);
 	    }
 
-		private static double GetUnitPositionBonus(Field field, Unit unit)
+		private static double GetUnitPositionBonus(
+			Field field, Unit unit, ExecutionOptions options)
 		{
 			int minX = unit.GetMinX();
 			int maxX = unit.GetMaxX();
@@ -99,33 +88,61 @@ namespace Solver
 
 			var attractor = GetBottomOpenPosition(field);
 
-			double attractorDistance = attractor.DistanceTo(unit.Pivot);
-			double attractorPenalty = attractorDistance < 4
-				? 0
-				: attractor.DistanceTo(unit.Pivot);
+			double attractorDistance = Math.Abs(attractor.X - unit.Pivot.X); // attractor.DistanceTo(unit.Pivot);
 
-			int centerPenalty = 0;
-			// TODO: get max height of filled cells
-			//if (field.Width - maxX < marginBottom || minX < marginBottom)
-			//{
-			//	centerPenalty = Math.Abs(center - field.Width / 2) ;
-			//}
-
-			// TODO: calculate the number of adjacent cells
-			int adjacencyBonus = 0; // TODO: get max height of filled cells
-			if ((maxY == field.Height - 1))
+			double depthPenalty = 0;
+			foreach (var member in unit.Members)
 			{
-				adjacencyBonus += 3;
+				depthPenalty += field.Height - 1 - member.Y;
 			}
 
-			// TODO: check if maxY members touch edge or filled cell
+			int edgeBonus = 0;
 			foreach (var position in unit.Members)
 			{
 				if (position.X == 0 || position.X == field.Width - 1)
-					adjacencyBonus += 3;
+					edgeBonus += 1;
 			}
 
-			return adjacencyBonus - depth * 5 - centerPenalty * 1 - attractorPenalty * 10;
+			double adjacencyBonus = GetAdjacencyBonus(field, unit, options);
+
+			return edgeBonus * options.EdgeRatio
+				+ adjacencyBonus
+				- depthPenalty * options.DepthPenaltyRatio
+				- attractorDistance * options.AttractorRatio;
+		}
+
+		private static double GetAdjacencyBonus(Field field, Unit unit, ExecutionOptions options)
+		{
+			double downBonus = options.AdjacencyDownRatio;
+			double sideBonus = options.AdjacencySideRatio;
+			double result = 0;
+			foreach (var m in unit.Members)
+			{
+				if (m.Y < field.Height - 1)
+				{
+					if (field[m.Translate(MoveDirection.SouthEast)])
+					{
+						result += downBonus;
+					}
+					else
+					{
+						result -= downBonus;
+					}
+					if (field[m.Translate(MoveDirection.SouthWest)])
+					{
+						result += downBonus;
+					}
+					else
+					{
+						result -= downBonus;
+					}
+				}
+				if (m.Y < field.Width - 1 && field[m.Translate(MoveDirection.East)])
+					result += sideBonus;
+				if (m.Y > 0 && field[m.Translate(MoveDirection.West)])
+					result += sideBonus;
+			}
+			return result;
 		}
 
 		private static Position GetBottomOpenPosition(Field field)
@@ -134,6 +151,7 @@ namespace Solver
 			for (int x = 0; x < field.Width; x++)
 			{
 				int y = 0;
+				// drop down until cells is empty
 				while (y < field.Height && !field[x, y])
 				{
 					y++;
@@ -146,6 +164,22 @@ namespace Solver
 			return min;
 		}
 
+		private static double GetFieldEstimate(Field field, ExecutionOptions options)
+		{
+			return CornerCellsBonus(field) * options.CornerCellsBonus
+				- GetHiddenHoles(field) * options.HiddenHolesPenalty;
+		}
+
+		private static double CornerCellsBonus(Field field)
+		{
+			double result = 0;
+			if (field[field.Width - 1, field.Height - 1])
+				result += 1;
+			if (field[0, field.Height - 1])
+				result += 1;
+			return result;
+		}
+
 		private static double GetHiddenHoles(Field field)
 		{
 			int result = 0;
@@ -155,10 +189,9 @@ namespace Solver
 				{
 					if (field[x, y] && field[x + 1, y])
 					{
-						var leftUnit = new Unit {Members = new[] {new Position(x, y)}};
-						var pos = leftUnit.Translate(MoveDirection.SouthEast).Members[0];
-						if (!field[pos.X, pos.Y])
-							result ++;
+						var underCell = new Position(x, y).Translate(MoveDirection.SouthEast);
+						if (!field[underCell])
+							result++;
 					}
 				}
 			}

@@ -45,7 +45,7 @@ namespace Solver
 			return dx == 0 ? unit : Translate(unit, dx, 0);
 		}
 
-		private static Position Translate(Position p, MoveDirection direction)
+		public static Position Translate(this Position p, MoveDirection direction)
 		{
 			switch (direction)
 			{

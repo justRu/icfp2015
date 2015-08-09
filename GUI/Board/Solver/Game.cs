@@ -78,6 +78,13 @@ namespace Solver
 			        }
 			        removed++;
 		        }
+		        for (int y = 0; y < removed; y++)
+		        {
+					for (int x = 0; x < field.Width; x++)
+					{
+						field[x, y] = false;
+					}
+		        }
 	        }
 			snapshot.Score += GetMoveScore(snapshot, lockedUnit, filled.Count);
 			snapshot.PrevUnitClearedLines = filled.Count;

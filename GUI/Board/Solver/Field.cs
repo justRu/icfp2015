@@ -36,6 +36,12 @@ namespace Solver
             set { this[x + y * Width] = value; }
         }
 
+	    public bool this[Position p]
+	    {
+			get { return this[p.X, p.Y]; }
+			set { this[p.X, p.Y] = value; }
+	    }
+
         public bool IsLineFull(int y)
         {
             for (int i = 0; i < Width; i++)

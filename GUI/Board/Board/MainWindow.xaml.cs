@@ -29,9 +29,13 @@ namespace Board
 				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
 				Options = new ExecutionOptions
 				{
-					MaxWidth = 2,
-					MaxHeight = 7,
-					MinEstimation = double.MinValue
+					MaxWidth = 4,
+					MaxHeight = 6,
+					MinEstimation = double.MinValue,
+					AttractorRatio = 10,
+					DepthPenaltyRatio = 10,
+					//HiddenHolesPenalty = 10,
+					AdjacencyDownRatio = 5
 				}
 			};
 
