@@ -7,6 +7,17 @@ using Solver;
 
 namespace GeneticSolver
 {
+	class Result
+	{
+		public ExecutionOptions Options { get; set; }
+
+		public double Score { get; set; }
+
+		public MoveDirection[] Commands { get; set; }
+
+		public int UnitIndex { get; set; }
+	}
+
 	internal static class GeneticSolver
 	{
 		public static readonly Random Random = new Random();
@@ -18,7 +29,7 @@ namespace GeneticSolver
 			int bestSize = 6;
 			double mutationPercent = 0.3;
 
-			var globalBest = new List<Tuple<double, ExecutionOptions>>();
+			var globalBest = new Result[0];
 			// Initialize population:
 			var population = Enumerable.Range(0, populationSize)
 				.Select(_ => Generate())
@@ -27,35 +38,44 @@ namespace GeneticSolver
 			{
 				mutationPercent = mutationPercent * (iterations - i) / iterations;
 				Console.WriteLine("========= Generation #" + i);
-				var tasks = population.Select(o => Task.Run(() => Calculate(snapshot, o))).ToArray();
-				Task.WaitAll(tasks);
-				var results = Array.ConvertAll(tasks, t => t.Result);
+				var tasks = population
+					.ToDictionary(o => o, o => Task.Run(() => Calculate(snapshot, o)));
+				Task.WaitAll(tasks.Values.ToArray());
+
+				var results = tasks.Select(
+					item => new Result
+					{
+						Options = item.Key,
+						Score = item.Value.Result.Snapshot.Score,
+						UnitIndex = item.Value.Result.Snapshot.UnitIndex,
+						Commands = item.Value.Result.Commands
+					}).ToArray();
+
 				int pos = 0;
-				foreach (var result in results.OrderByDescending(r => r.Snapshot.Score))
+				foreach (var result in results.OrderByDescending(r => r.Score))
 				{
 					++pos;
 					PrintResult(pos, result);
 				}
-				var bestResults = new HashSet<ExecutionResult>(
-					results.OrderByDescending(r => r.Snapshot.Score).Take(bestSize));
-				for (int j = population.Count - 1; j >= 0; j--)
-				{
-					if (!bestResults.Contains(results[j]))
-					{
-						population.RemoveAt(j);
-					}
-					else
-					{
-						AddToGlobalBest(globalBest, bestSize, results[j].Snapshot.Score, population[j]);
-					}
-				}
+
+				var bestResults = results
+					.OrderByDescending(r => r.Score).Take(bestSize)
+					.ToArray();
+
+				globalBest = globalBest.Concat(bestResults)
+					.OrderByDescending(r => r.Score)
+					.Take(bestSize)
+					.ToArray();
 				
+				population = new List<ExecutionOptions>(bestResults.Select(r => r.Options));
+			
 				for (int j = 0; j < populationSize - bestSize; j++)
 				{
 					int firstIndex;
 					int secondIndex;
 					do
 					{
+						// TODO: carousel?
 						firstIndex = Random.Next(0, bestSize);
 						secondIndex = Random.Next(0, bestSize);
 					} while (firstIndex == secondIndex);
@@ -68,38 +88,21 @@ namespace GeneticSolver
 				}
 			}
 			Console.WriteLine("Global options: ");
-			foreach (var pair in globalBest.OrderByDescending(p => p.Item1))
+			foreach (var result in globalBest)
 			{
-				Console.WriteLine("Score: " + pair.Item1);
-				Console.WriteLine(JsonConvert.SerializeObject(pair.Item2));
+				Console.WriteLine("Score: " + result.Score);
+				Console.WriteLine(JsonConvert.SerializeObject(result.Options));
+				Console.WriteLine(string.Join(", ", result.Commands));
 			}
 		}
 
-		private static void PrintResult(int pos, ExecutionResult result)
+		private static void PrintResult(int pos, Result result)
 		{
 			Console.WriteLine("#{0} Score: {1}, Units: {2}, Commands: {3}",
 				pos,
-				result.Snapshot.Score,
-				result.Snapshot.UnitIndex,
+				result.Score,
+				result.UnitIndex,
 				result.Commands.Length);
-		}
-
-		private static void AddToGlobalBest(List<Tuple<double, ExecutionOptions>> globalBest, int bestSize, double score, ExecutionOptions options)
-		{
-			if (globalBest.Count < bestSize)
-			{
-				globalBest.Add(Tuple.Create(score, options));
-			}
-			else
-			{
-				double minBest = globalBest.Min(t => t.Item1);
-				if (score > minBest)
-				{
-					var minItem = globalBest.Find(t => t.Item1 == minBest);
-					globalBest.Remove(minItem);
-					globalBest.Add(Tuple.Create(score, options));
-				}
-			}
 		}
 
 		private static ExecutionResult Calculate(Snapshot snapshot, ExecutionOptions options)

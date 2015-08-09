@@ -24,22 +24,24 @@ namespace Board
 
 			_input = JsonConvert.DeserializeObject<Input>(File.ReadAllText("input.json"));
 
+			var options = JsonConvert.DeserializeObject<ExecutionOptions>(File.ReadAllText("options.json"));
+			//new ExecutionOptions
+			//{
+			//	MaxWidth = 4,
+			//	MaxHeight = 6,
+			//	MinEstimation = double.MinValue,
+			//	AttractorRatio = 10,
+			//	DepthPenaltyRatio = 10,
+			//	//HiddenHolesPenalty = 10,
+			//	AdjacencyDownRatio = 5
+			//}
 			_execution = new ExecutionRequest
 			{
 				Snapshot = new Snapshot(_input, _input.SourceSeeds.First()),
-				Options = new ExecutionOptions
-				{
-					MaxWidth = 4,
-					MaxHeight = 6,
-					MinEstimation = double.MinValue,
-					AttractorRatio = 10,
-					DepthPenaltyRatio = 10,
-					//HiddenHolesPenalty = 10,
-					AdjacencyDownRatio = 5
-				}
+				Options = options
 			};
 
-			_solver = new IterativeSearchSolver(1200); //new TraverseSolver();
+			_solver = new IterativeSearchSolver(1500); //new TraverseSolver();
 
 			SizeChanged += (s, e) => Update();
 
