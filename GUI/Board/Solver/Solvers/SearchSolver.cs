@@ -183,11 +183,9 @@ namespace Solver
 					int y = 0;
 					// drop down until cells is empty
 					var offset = x + y * w;
-					var pos = ptr[offset >> 3] & (1 << (offset & 7));
+					var v = ptr[offset >> 3] & (1 << (offset & 7));
 
-					var v = (*(ptr + pos)) != 0;
-
-					while (y < field.Height && !v)
+					while (y < h && v != 0)
 					{
 						y++;
 					}
