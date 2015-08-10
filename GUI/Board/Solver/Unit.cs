@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Solver
@@ -76,7 +77,9 @@ namespace Solver
 		{
 			if (!Pivot.Equals(other.Pivot))
 				return false;
-			return Members.SequenceEqual(other.Members);
+			var hs = new HashSet<Position>(Members);
+			hs.ExceptWith(other.Members);
+			return hs.Count == 0;
 		}
 	}
 }
