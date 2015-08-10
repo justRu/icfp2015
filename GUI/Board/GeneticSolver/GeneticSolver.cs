@@ -15,7 +15,7 @@ namespace GeneticSolver
 		public static Result Run(Snapshot snapshot)
 		{
 			var knownsPhrases = new[] {"r'lyeh", "ei!"};
-			int iterations = 10;
+			int iterations = 4000;
 			int populationSize = 12;
 			int bestSize = 6;
 			double mutationPercent = 0.3;
@@ -52,10 +52,10 @@ namespace GeneticSolver
 						return usedWords.Count > 1;
 					}).ToArray();
 
-				if (manyWordResults.Length > 0)
-				{
-					return manyWordResults.OrderByDescending(r => r.Score).First();
-				}
+				//if (manyWordResults.Length > 0)
+				//{
+				//	return manyWordResults.OrderByDescending(r => r.Score).First();
+				//}
 
 				int pos = 0;
 				foreach (var result in results.OrderByDescending(r => r.Score))
