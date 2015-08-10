@@ -15,7 +15,7 @@ namespace GeneticSolver
 		public static Result Run(Snapshot snapshot)
 		{
 			var knownsPhrases = new[] {"r'lyeh", "ei!"};
-			int iterations = 4000;
+			int iterations = 10;
 			int populationSize = 12;
 			int bestSize = 6;
 			double mutationPercent = 0.3;
