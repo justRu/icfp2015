@@ -2,7 +2,7 @@
 
 $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(($token)))
 
-$headers = @{Authorization=("Basic {0}" -f $base64AuthInfo); }
+$headers = @{Authorization=("Basic {0}" -f $base64AuthInfo)}
 $text = Get-Content .\solution.json -Raw 
 
-Invoke-RestMethod -Headers $headers -Method Post -Uri https://davar.icfpcontest.org/teams/4/solutions -ContentType "application/json" -Proxy "http://hqproxy.avp.ru" -ProxyUseDefaultCredentials -Body $text
+Invoke-RestMethod -Headers $headers -ContentType "application/json" -Method Post -Uri https://davar.icfpcontest.org/teams/4/solutions -Body $text
