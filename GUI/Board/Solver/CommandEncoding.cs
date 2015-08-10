@@ -43,26 +43,28 @@ namespace Board.Helpers
 				"bigboo tay",
 				"bigbootay",
 
-				"ia! ia!",	
-
+				// From levels:
+				"aleister",
+				"yuggoth",
+				"ia! ia!",
 				"ei!", // YES
-				"miskatonic",
-				"the deep ones", 
-				"deep ones", 
-				"the old ones", 
-				"old ones", 
-				//"AS2H2", // NO
-				"tuggoth",
-				"the turing squad", 
-				"turing squad", 
 				"r'lyeh", // YES
-				"cthulhu", 
-				"cthulhu cthulhu", 
-				"cthulhu cthulhu cthulhu", 
-				"In his house at R'lyeh dead Cthulhu waits dreaming", 
-				"dead cthulhu waits dreaming", 
-				"strong ai golem", 
-				"blue blaze irregular", 
+
+				"miskatonic",
+				"the deep ones",
+				"deep ones",
+				"the old ones",
+				"old ones",
+				//"AS2H2", // NO
+				"the turing squad",
+				"turing squad",
+				"cthulhu",
+				"cthulhu cthulhu",
+				"cthulhu cthulhu cthulhu",
+				"In his house at R'lyeh dead Cthulhu waits dreaming",
+				"dead cthulhu waits dreaming",
+				"strong ai golem",
+				"blue blaze irregular",
 				"digital dark arts",
 
 				"2015",
