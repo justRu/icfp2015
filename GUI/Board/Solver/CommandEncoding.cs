@@ -8,8 +8,19 @@ namespace Board.Helpers
 {
 	public static class CommandEncoding
 	{
+		internal class Phrase
+		{
+			internal int MovesLen;
+			internal int KeyLen;
+
+			internal string Key;
+			internal MoveDirection[] Moves;
+		}
+
 		private static readonly Dictionary<MoveDirection, char[]> MovesChars;
 		private static readonly Dictionary<string, MoveDirection[]> TranslatedPhrases;
+
+		private static readonly Phrase[] TranslatedPhrasesContainer;
 
 		static CommandEncoding()
 		{
@@ -62,6 +73,14 @@ namespace Board.Helpers
 			TranslatedPhrases = powerPhrases.ToDictionary(
 				word => word,
 				word => word.Select(ch => reverseDict[char.ToLowerInvariant(ch)]).ToArray());
+
+			TranslatedPhrasesContainer = powerPhrases.Select(word => new Phrase
+				{
+					MovesLen = word.Select(ch => reverseDict[char.ToLowerInvariant(ch)]).ToArray().Length,
+					KeyLen = word.Length,
+					Key= word,
+					Moves = word.Select(ch => reverseDict[char.ToLowerInvariant(ch)]).ToArray()
+				}).ToArray();
 		}
 
 		public static string Encode(MoveDirection[] moves, out HashSet<string> usedWords)
@@ -93,7 +112,7 @@ namespace Board.Helpers
 			return words.Sum(w => w.Length);
 		}
 
-		private static bool TryFindWord(MoveDirection[] moves, int startIndex, out string word)
+		/*private static bool TryFindWord(MoveDirection[] moves, int startIndex, out string word)
 		{
 			foreach (var pair in TranslatedPhrases
 				.Where(d => d.Value.Length <= moves.Length)
@@ -105,6 +124,23 @@ namespace Board.Helpers
 					return true;
 				}
 			}
+			word = null;
+			return false;
+		}*/
+
+		private static bool TryFindWord(MoveDirection[] moves, int startIndex, out string word)
+		{
+			foreach (var pair in TranslatedPhrasesContainer
+				.Where(d => d.MovesLen <= moves.Length)
+				.OrderByDescending(d => d.KeyLen))
+			{
+				if (moves.Skip(startIndex).Take(pair.Moves.Length).SequenceEqual(pair.Moves))
+				{
+					word = pair.Key;
+					return true;
+				}
+			}
+
 			word = null;
 			return false;
 		}

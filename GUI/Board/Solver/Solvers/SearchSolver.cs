@@ -152,7 +152,7 @@ namespace Solver
 			return result;
 		}
 
-		private static Position GetBottomOpenPosition(Field field)
+		/*private static Position GetBottomOpenPosition(Field field)
 		{
 			Position min = new Position(-1, field.Height);
 			for (int x = 0; x < field.Width; x++)
@@ -169,6 +169,35 @@ namespace Solver
 				}
 			}
 			return min;
+		}*/
+
+		private unsafe static Position GetBottomOpenPosition(Field field)
+		{
+			var w = field.Width;
+			var h = field.Height;
+			fixed (byte* ptr = field.Cells)
+			{
+				Position min = new Position(-1, h);
+				for (int x = 0; x < w; x++)
+				{
+					int y = 0;
+					// drop down until cells is empty
+					var offset = x + y * w;
+					var pos = ptr[offset >> 3] & (1 << (offset & 7));
+
+					var v = (*(ptr + pos)) != 0;
+
+					while (y < field.Height && !v)
+					{
+						y++;
+					}
+					if (y <= min.Y)
+					{
+						min = new Position(x, y);
+					}
+				}
+				return min;
+			}
 		}
 
 		private static double GetFieldEstimate(Field field, ExecutionOptions options)
