@@ -18,6 +18,8 @@ namespace Solver
 
 		public List<Unit> UnitHistory { get; set; }
 
+		public double FieldEstimate { get; set; }
+
 		public int PrevUnitClearedLines { get; set; }
 
 		/// <summary>
@@ -28,8 +30,9 @@ namespace Solver
 			Field = new Field(input);
 			UnitsQueue = new UnitsQueue(input.Units, seed, input.SourceLength);
 			CurrentUnit = Field.Spawn(UnitsQueue.Get(0));
-			UnitHistory = new List<Unit>();
+			UnitHistory = new List<Unit> { CurrentUnit };
 			Score = 0;
+			FieldEstimate = 0;
 		}
 
 		/// <summary>
@@ -42,9 +45,10 @@ namespace Solver
 			Finished = other.Finished;
 			Score = other.Score;
 			UnitIndex = other.UnitIndex;
-			// TODO: move index from queue to this class
 			UnitsQueue = other.UnitsQueue;
 			UnitHistory = new List<Unit>(other.UnitHistory);
+			FieldEstimate = other.FieldEstimate;
+			PrevUnitClearedLines = other.PrevUnitClearedLines;
 		}
 	}
 }

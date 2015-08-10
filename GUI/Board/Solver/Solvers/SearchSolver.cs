@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Configuration;
 using System.Threading.Tasks;
+using Board.Helpers;
 
 namespace Solver
 {
@@ -53,12 +54,14 @@ namespace Solver
 				.Take((int)Math.Ceiling(options.MaxWidth));
 		    foreach (var result in childResults)
 		    {
+			    var commands = move.HasValue
+				    ? result.Commands.Prepend(move.Value).ToArray()
+				    : result.Commands;
+				
 				yield return new ExecutionResult
 				{
-					Commands = move.HasValue
-						? result.Commands.Prepend(move.Value).ToArray()
-						: result.Commands,
-					Estimate = result.Estimate, // TODO: combine somehow?
+					Commands = commands,
+					Estimate = result.Estimate + CommandEncoding.GetWordsPower(commands) * options.PowerWordsBonus, 
 					Snapshot = result.Snapshot
 				};
 		    }
@@ -66,8 +69,12 @@ namespace Solver
 
 	    private static double SnapshotEvaluate(Snapshot snapshot, ExecutionOptions options)
 	    {
+		    if (snapshot.UnitHistory.Count <= 1) // new unit, so field has changed
+		    {
+			    snapshot.FieldEstimate = GetFieldEstimate(snapshot.Field, options);
+		    }
 			return snapshot.Score
-				+ GetFieldEstimate(snapshot.Field, options)
+				+ snapshot.FieldEstimate
 				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit, options);
 	    }
 
@@ -137,9 +144,9 @@ namespace Solver
 						result -= downBonus;
 					}
 				}
-				if (m.Y < field.Width - 1 && field[m.Translate(MoveDirection.East)])
+				if (m.X < field.Width - 1 && field[m.Translate(MoveDirection.East)])
 					result += sideBonus;
-				if (m.Y > 0 && field[m.Translate(MoveDirection.West)])
+				if (m.X > 0 && field[m.Translate(MoveDirection.West)])
 					result += sideBonus;
 			}
 			return result;

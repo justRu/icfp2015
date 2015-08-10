@@ -24,15 +24,49 @@ namespace Board.Helpers
 				//\t, \n, \r (ignored)
 			};
 			var reverseDict = Reverse(MovesChars);
-			var powerPhrases = new[] { "Ei!" };
+			var powerPhrases = new[]
+			{
+				"bigboote",
+				"big booty",
+				"bigbooty",
+				"bigboo tay",
+				"bigbootay",
+
+				"ia! ia!",	
+
+				"ei!", // YES
+				"miskatonic",
+				"the deep ones", 
+				"deep ones", 
+				"the old ones", 
+				"old ones", 
+				//"AS2H2", // NO
+				"tuggoth",
+				"the turing squad", 
+				"turing squad", 
+				"r'lyeh", // YES
+				"cthulhu", 
+				"cthulhu cthulhu", 
+				"cthulhu cthulhu cthulhu", 
+				"In his house at R'lyeh dead Cthulhu waits dreaming", 
+				"dead cthulhu waits dreaming", 
+				"strong ai golem", 
+				"blue blaze irregular", 
+				"digital dark arts",
+
+				"2015",
+				"12345",
+				"icfp2015",
+				"icfp 2015",
+			};
 			TranslatedPhrases = powerPhrases.ToDictionary(
 				word => word,
 				word => word.Select(ch => reverseDict[char.ToLowerInvariant(ch)]).ToArray());
-
 		}
 
-		public static string Encode(MoveDirection[] moves)
+		public static string Encode(MoveDirection[] moves, out HashSet<string> usedWords)
 		{
+			usedWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			var sb = new StringBuilder(moves.Length);
 			for (int i = 0; i < moves.Length;)
 			{
@@ -40,6 +74,7 @@ namespace Board.Helpers
 				if (TryFindWord(moves, i, out word))
 				{
 					sb.Append(word);
+					usedWords.Add(word);
 					i += word.Length;
 				}
 				else
@@ -51,9 +86,18 @@ namespace Board.Helpers
 			return sb.ToString();
 		}
 
+		public static int GetWordsPower(MoveDirection[] moves)
+		{
+			HashSet<string> words;
+			Encode(moves, out words);
+			return words.Sum(w => w.Length);
+		}
+
 		private static bool TryFindWord(MoveDirection[] moves, int startIndex, out string word)
 		{
-			foreach (var pair in TranslatedPhrases.OrderByDescending(d => d.Key.Length))
+			foreach (var pair in TranslatedPhrases
+				.Where(d => d.Value.Length <= moves.Length)
+				.OrderByDescending(d => d.Key.Length))
 			{
 				if (moves.Skip(startIndex).Take(pair.Value.Length).SequenceEqual(pair.Value))
 				{
