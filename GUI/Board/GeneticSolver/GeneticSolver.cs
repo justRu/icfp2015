@@ -2,34 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Board.Helpers;
 using Newtonsoft.Json;
 using Solver;
 
 namespace GeneticSolver
 {
-	class Result
-	{
-		public ExecutionOptions Options { get; set; }
-
-		public double Score { get; set; }
-
-		public MoveDirection[] Commands { get; set; }
-
-		public int UnitIndex { get; set; }
-	}
-
 	internal static class GeneticSolver
 	{
 		public static readonly Random Random = new Random();
 
-		public static void Run(Snapshot snapshot)
+		public static Result Run(Snapshot snapshot)
 		{
+			var knownsPhrases = new[] {"r'lyeh", "ei!"};
 			int iterations = 10;
 			int populationSize = 12;
 			int bestSize = 6;
 			double mutationPercent = 0.3;
 
-			var globalBest = new Result[0];
+			Result globalBest = null;
 			// Initialize population:
 			var population = Enumerable.Range(0, populationSize)
 				.Select(_ => Generate())
@@ -51,6 +42,21 @@ namespace GeneticSolver
 						Commands = item.Value.Result.Commands
 					}).ToArray();
 
+
+				var manyWordResults = results.Where(
+					r =>
+					{
+						HashSet<string> usedWords;
+						CommandEncoding.Encode(r.Commands, out usedWords);
+						usedWords.ExceptWith(knownsPhrases);
+						return usedWords.Count > 1;
+					}).ToArray();
+
+				//if (manyWordResults.Length > 0)
+				//{
+				//	return manyWordResults.OrderByDescending(r => r.Score).First();
+				//}
+
 				int pos = 0;
 				foreach (var result in results.OrderByDescending(r => r.Score))
 				{
@@ -62,10 +68,10 @@ namespace GeneticSolver
 					.OrderByDescending(r => r.Score).Take(bestSize)
 					.ToArray();
 
-				globalBest = globalBest.Concat(bestResults)
-					.OrderByDescending(r => r.Score)
-					.Take(bestSize)
-					.ToArray();
+				if (globalBest == null || globalBest.Score < bestResults.First().Score)
+				{
+					globalBest = bestResults.First();
+				}
 				
 				population = new List<ExecutionOptions>(bestResults.Select(r => r.Options));
 			
@@ -87,13 +93,7 @@ namespace GeneticSolver
 					Mutate(options, mutationPercent);
 				}
 			}
-			Console.WriteLine("Global options: ");
-			foreach (var result in globalBest)
-			{
-				Console.WriteLine("Score: " + result.Score);
-				Console.WriteLine(JsonConvert.SerializeObject(result.Options));
-				Console.WriteLine(string.Join(", ", result.Commands));
-			}
+			return globalBest;
 		}
 
 		private static void PrintResult(int pos, Result result)
@@ -205,11 +205,12 @@ namespace GeneticSolver
 			{"MaxHeight", new Variable(1.5, 8)}, // use with ceiling
 			{"AttractorRatio", new Variable(0, 20)},
 			{"DepthPenaltyRatio", new Variable(0, 20)},
-			{"HiddenHolesPenalty", new Variable(0, 100)},
+			{"HiddenHolesPenalty", new Variable(0, 120)},
 			{"AdjacencyDownRatio", new Variable(2, 15)},
 			{"AdjacencySideRatio", new Variable(1, 7)},
 			{"EdgeRatio", new Variable(0, 20)},
-			{"CornerCellsBonus", new Variable(0, 100)}
+			{"CornerCellsBonus", new Variable(0, 100)},
+			{"PowerWordsBonus", new Variable(0, 200)}
 		}; 
 	}
 }

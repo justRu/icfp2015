@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
 
 namespace Solver
 {
@@ -49,11 +48,11 @@ namespace Solver
                 {
                     snapshot.CurrentUnit = nextUnit;
 					snapshot.UnitHistory.Clear();
+					snapshot.UnitHistory.Add(snapshot.CurrentUnit);
                 }
             }
         }
 
-        // TODO: implement
         private static Snapshot DeleteLines(Snapshot snapshot, Unit lockedUnit)
         {
 	        var field = snapshot.Field;

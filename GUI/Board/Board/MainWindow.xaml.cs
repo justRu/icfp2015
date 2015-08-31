@@ -41,7 +41,7 @@ namespace Board
 				Options = options
 			};
 
-			_solver = new IterativeSearchSolver(1500); //new TraverseSolver();
+			_solver = new IterativeSearchSolver(4000); //new TraverseSolver();
 
 			SizeChanged += (s, e) => Update();
 

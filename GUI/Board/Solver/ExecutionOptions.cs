@@ -30,5 +30,7 @@ namespace Solver
 
 		// 50 ?
 		public double HiddenHolesPenalty { get; set; }
+
+		public double PowerWordsBonus { get; set; }
 	}
 }

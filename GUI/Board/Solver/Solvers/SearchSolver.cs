@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Configuration;
 using System.Threading.Tasks;
+using Board.Helpers;
 
 namespace Solver
 {
@@ -53,12 +54,14 @@ namespace Solver
 				.Take((int)Math.Ceiling(options.MaxWidth));
 		    foreach (var result in childResults)
 		    {
+			    var commands = move.HasValue
+				    ? result.Commands.Prepend(move.Value).ToArray()
+				    : result.Commands;
+				
 				yield return new ExecutionResult
 				{
-					Commands = move.HasValue
-						? result.Commands.Prepend(move.Value).ToArray()
-						: result.Commands,
-					Estimate = result.Estimate, // TODO: combine somehow?
+					Commands = commands,
+					Estimate = result.Estimate + CommandEncoding.GetWordsPower(commands) * options.PowerWordsBonus, 
 					Snapshot = result.Snapshot
 				};
 		    }
@@ -66,8 +69,12 @@ namespace Solver
 
 	    private static double SnapshotEvaluate(Snapshot snapshot, ExecutionOptions options)
 	    {
+		    if (snapshot.UnitHistory.Count <= 1) // new unit, so field has changed
+		    {
+			    snapshot.FieldEstimate = GetFieldEstimate(snapshot.Field, options);
+		    }
 			return snapshot.Score
-				+ GetFieldEstimate(snapshot.Field, options)
+				+ snapshot.FieldEstimate
 				+ GetUnitPositionBonus(snapshot.Field, snapshot.CurrentUnit, options);
 	    }
 
@@ -137,15 +144,15 @@ namespace Solver
 						result -= downBonus;
 					}
 				}
-				if (m.Y < field.Width - 1 && field[m.Translate(MoveDirection.East)])
+				if (m.X < field.Width - 1 && field[m.Translate(MoveDirection.East)])
 					result += sideBonus;
-				if (m.Y > 0 && field[m.Translate(MoveDirection.West)])
+				if (m.X > 0 && field[m.Translate(MoveDirection.West)])
 					result += sideBonus;
 			}
 			return result;
 		}
 
-		private static Position GetBottomOpenPosition(Field field)
+		/*private static Position GetBottomOpenPosition(Field field)
 		{
 			Position min = new Position(-1, field.Height);
 			for (int x = 0; x < field.Width; x++)
@@ -162,6 +169,33 @@ namespace Solver
 				}
 			}
 			return min;
+		}*/
+
+		private unsafe static Position GetBottomOpenPosition(Field field)
+		{
+			var w = field.Width;
+			var h = field.Height;
+			fixed (byte* ptr = field.Cells)
+			{
+				Position min = new Position(-1, h);
+				for (int x = 0; x < w; x++)
+				{
+					int y = 0;
+					// drop down until cells is empty
+					var offset = x + y * w;
+					var v = ptr[offset >> 3] & (1 << (offset & 7));
+
+					while (y < h && v != 0)
+					{
+						y++;
+					}
+					if (y <= min.Y)
+					{
+						min = new Position(x, y);
+					}
+				}
+				return min;
+			}
 		}
 
 		private static double GetFieldEstimate(Field field, ExecutionOptions options)
